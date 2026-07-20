@@ -3,200 +3,770 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KFS AI Assistant</title>
+<title>KFS AI Assistant — كلية الذكاء الاصطناعي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.040 0.000 0);
+    --surface: oklch(0.080 0.008 180);
+    --surface-2: oklch(0.140 0.012 180);
+    --glass-bg: oklch(0.100 0.010 180 / 0.45);
+    --glass-border: oklch(0.300 0.025 180 / 0.12);
+    --glass-shadow: 0 8px 32px oklch(0.000 0.000 0 / 0.40);
+    --primary: oklch(0.620 0.140 180);
+    --primary-dim: oklch(0.520 0.120 180);
+    --primary-subtle: oklch(0.620 0.140 180 / 0.15);
+    --primary-glow: oklch(0.620 0.140 180 / 0.25);
+    --accent: oklch(0.720 0.180 280);
+    --accent-subtle: oklch(0.720 0.180 280 / 0.15);
+    --ink: oklch(0.940 0.004 180);
+    --ink-dim: oklch(0.600 0.030 180);
+    --muted: oklch(0.400 0.020 180);
+    --error: oklch(0.600 0.180 30);
+    --error-bg: oklch(0.600 0.180 30 / 0.10);
+    --success: oklch(0.650 0.150 160);
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    --radius-xl: 28px;
+  }
+
+  html { scroll-behavior: smooth; }
+
   body {
-    font-family: system-ui, 'Segoe UI', Tahoma, sans-serif;
-    background: #0f0f1a;
-    color: #e0e0e0;
-    min-height: 100vh;
+    font-family: 'Tajawal', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    overflow-x: hidden;
+    position: relative;
   }
-  .container { max-width: 700px; width: 100%; margin-top: 30px; }
 
-  header { text-align: center; margin-bottom: 30px; }
-  header h1 { font-size: 2rem; color: #fff; }
-  header h1 span { color: #e94560; }
-  header p { color: #888; margin-top: 6px; font-size: 0.95rem; }
+  /* ─── Animated Background ─── */
+  .bg-orbs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .bg-orbs .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    will-change: transform;
+  }
+  .bg-orbs .orb-1 {
+    width: 550px; height: 550px;
+    background: oklch(0.620 0.140 180 / 0.30);
+    top: -180px; left: -120px;
+    animation: orbFloat1 18s ease-in-out infinite;
+  }
+  .bg-orbs .orb-2 {
+    width: 400px; height: 400px;
+    background: oklch(0.720 0.180 280 / 0.15);
+    bottom: -100px; right: -80px;
+    animation: orbFloat2 22s ease-in-out infinite;
+  }
+  .bg-orbs .orb-3 {
+    width: 300px; height: 300px;
+    background: oklch(0.600 0.100 160 / 0.15);
+    top: 40%; left: 50%;
+    animation: orbFloat3 20s ease-in-out infinite;
+  }
+  @keyframes orbFloat1 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(60px, 40px) scale(1.08); }
+    66% { transform: translate(-30px, 80px) scale(0.95); }
+  }
+  @keyframes orbFloat2 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-50px, -60px) scale(1.12); }
+  }
+  @keyframes orbFloat3 {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 10px) scale(0.95); }
+  }
 
-  .card {
-    background: #1a1a2e;
-    border: 1px solid #2a2a4a;
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(oklch(1 0 0 / 0.015) 1px, transparent 1px),
+      linear-gradient(90deg, oklch(1 0 0 / 0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .bg-noise {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 256px 256px;
+  }
+
+  /* ─── Main Layout ─── */
+  .app-wrapper {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 680px;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+  }
+
+  /* ─── Header ─── */
+  header {
+    padding: 36px 0 28px;
+    text-align: center;
+  }
+  .brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
     border-radius: 16px;
-    padding: 25px;
+    background: linear-gradient(135deg, var(--primary), oklch(0.520 0.120 180));
+    margin-bottom: 16px;
+    box-shadow: 0 0 40px var(--primary-glow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .brand-mark:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 60px var(--primary-glow);
+  }
+  .brand-mark svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--ink);
+  }
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  header h1 .kfs {
+    background: linear-gradient(135deg, var(--primary), oklch(0.650 0.150 190));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header h1 .ai {
+    color: var(--ink);
+    -webkit-text-fill-color: var(--ink);
+  }
+  header p {
+    color: var(--ink-dim);
+    font-size: 0.95rem;
+    font-weight: 400;
+    margin-top: 6px;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .header-accent {
+    width: 40px;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--primary);
+    margin: 12px auto 0;
+    opacity: 0.6;
+  }
+
+  /* ─── Glass Card ─── */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(1.2);
+    -webkit-backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--glass-shadow);
+  }
+
+  /* ─── Search Section ─── */
+  .search-section {
     margin-bottom: 20px;
   }
+  .search-section .glass {
+    padding: 20px;
+  }
 
-  .input-group {
+  .input-row {
     display: flex;
     gap: 10px;
+    align-items: center;
   }
-  .input-group input {
+
+  .input-wrap {
     flex: 1;
-    padding: 14px 18px;
-    border: 1px solid #2a2a4a;
-    border-radius: 12px;
-    background: #0f0f1a;
-    color: #e0e0e0;
-    font-size: 1rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .input-wrap .input-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+    pointer-events: none;
+    transition: color 0.3s ease;
+  }
+  .input-wrap input:focus ~ .input-icon {
+    color: var(--primary);
+  }
+
+  .input-wrap input {
+    width: 100%;
+    padding: 14px 48px 14px 16px;
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: oklch(0.050 0.000 0 / 0.50);
+    color: var(--ink);
     font-family: inherit;
+    font-size: 0.95rem;
     outline: none;
-    transition: 0.2s;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
-  .input-group input:focus { border-color: #e94560; }
-  .input-group input::placeholder { color: #555; }
-  .input-group button {
-    padding: 14px 28px;
+  .input-wrap input::placeholder {
+    color: var(--muted);
+  }
+  .input-wrap input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-subtle);
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
     border: none;
-    border-radius: 12px;
-    background: #e94560;
-    color: #fff;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--primary), oklch(0.520 0.120 180));
+    color: var(--ink);
     font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
     white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    box-shadow: 0 0 20px var(--primary-glow);
   }
-  .input-group button:hover { background: #d63850; }
-  .input-group button:disabled {
-    background: #555;
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 0 30px var(--primary-glow);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
+    box-shadow: none;
   }
 
-  .answer-card { display: none; }
-  .answer-card.visible { display: block; }
-
-  .answer-card .answer-text {
-    font-size: 1.05rem;
-    line-height: 1.8;
-    color: #d0d0e0;
-    white-space: pre-wrap;
+  /* ─── Quick Suggestions ─── */
+  .quick-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--glass-border);
   }
-
-  .sources { margin-top: 20px; }
-  .sources h4 {
-    color: #e94560;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
-  }
-  .source-item {
-    background: #0f0f1a;
-    border: 1px solid #2a2a4a;
-    border-radius: 10px;
-    padding: 12px 16px;
-    margin-bottom: 8px;
-  }
-  .source-item .title { color: #4ec9b0; font-weight: 600; font-size: 0.9rem; }
-  .source-item .section { color: #888; font-size: 0.8rem; }
-  .source-item .preview {
-    color: #666;
+  .quick-suggestions .label {
     font-size: 0.8rem;
-    margin-top: 4px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--ink-dim);
+    width: 100%;
+    margin-bottom: 2px;
+    font-weight: 500;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--glass-border);
+    background: oklch(1 0 0 / 0.03);
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .chip:hover {
+    border-color: var(--primary);
+    background: var(--primary-subtle);
+    color: var(--primary);
+  }
+  .chip:active {
+    transform: scale(0.96);
+  }
+  .chip svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
   }
 
+  /* ─── Error ─── */
+  .error-box {
+    display: none;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    background: var(--error-bg);
+    border: 1px solid oklch(0.600 0.180 30 / 0.25);
+    color: oklch(0.750 0.120 30);
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .error-box.visible {
+    display: flex;
+  }
+  .error-box svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ─── Loading ─── */
   .loading {
     display: none;
+    padding: 32px;
     text-align: center;
-    padding: 30px;
-    color: #888;
   }
   .loading.visible { display: block; }
-  .spinner {
-    width: 36px; height: 36px;
-    border: 3px solid #2a2a4a;
-    border-top: 3px solid #e94560;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 12px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
 
-  .error {
-    display: none;
-    background: #2a0a0a;
-    border: 1px solid #e94560;
-    border-radius: 12px;
-    padding: 16px;
-    color: #e94560;
-    margin-bottom: 16px;
+  .shimmer {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
   }
-  .error.visible { display: block; }
-
-  .hint {
-    text-align: center;
-    color: #555;
+  .shimmer-line {
+    height: 12px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    background: linear-gradient(
+      90deg,
+      var(--surface) 25%,
+      var(--surface-2) 50%,
+      var(--surface) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+  }
+  .shimmer-line:last-child { width: 65%; }
+  .shimmer-line.short { width: 45%; }
+  @keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  .loading-text {
+    color: var(--ink-dim);
     font-size: 0.85rem;
+    margin-top: 12px;
+    font-weight: 500;
+  }
+  .loading-dots::after {
+    content: '';
+    animation: dots 1.5s steps(4, end) infinite;
+  }
+  @keyframes dots {
+    0% { content: ''; }
+    25% { content: '.'; }
+    50% { content: '..'; }
+    75% { content: '...'; }
+  }
+
+  /* ─── Answer Section ─── */
+  .answer-section {
+    display: none;
+    margin-bottom: 20px;
+  }
+  .answer-section.visible { display: block; }
+
+  .answer-card .glass {
+    padding: 24px;
+  }
+
+  .answer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .answer-header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .answer-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .answer-icon svg {
+    width: 16px;
+    height: 16px;
+    color: var(--primary);
+  }
+  .answer-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .answer-label span {
+    color: var(--primary);
+  }
+
+  .btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--glass-border);
+    background: transparent;
+    color: var(--ink-dim);
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-icon:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-subtle);
+  }
+  .btn-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  .btn-icon.copied {
+    border-color: var(--success);
+    color: var(--success);
+  }
+
+  .answer-text {
+    font-size: 1rem;
+    line-height: 1.85;
+    color: oklch(0.880 0.008 180);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+  .answer-text p {
+    margin-bottom: 0.75em;
+  }
+  .answer-text p:last-child { margin-bottom: 0; }
+
+  /* ─── Sources ─── */
+  .sources-section {
     margin-top: 20px;
   }
-  .hint span { color: #777; cursor: pointer; transition: 0.2s; }
-  .hint span:hover { color: #e94560; }
-
-  footer {
-    text-align: center;
-    color: #444;
-    font-size: 0.8rem;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 1px solid #1a1a2e;
-    width: 100%;
+  .sources-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+  }
+  .sources-label svg {
+    width: 14px;
+    height: 14px;
   }
 
-  @media (max-width: 500px) {
-    .input-group { flex-direction: column; }
-    .input-group button { width: 100%; }
-    header h1 { font-size: 1.5rem; }
+  .source-item {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: var(--radius-md);
+    background: oklch(1 0 0 / 0.02);
+    border: 1px solid var(--glass-border);
+    margin-bottom: 8px;
+    transition: border-color 0.25s ease;
+    cursor: default;
+  }
+  .source-item:hover {
+    border-color: oklch(0.300 0.025 180 / 0.25);
+  }
+
+  .source-badge {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    background: var(--primary);
+    align-self: stretch;
+  }
+  .source-badge.accent {
+    background: var(--accent);
+  }
+  .source-badge.success {
+    background: var(--success);
+  }
+
+  .source-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .source-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 2px;
+  }
+  .source-title.accent {
+    color: var(--accent);
+  }
+  .source-meta {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+  .source-preview {
+    font-size: 0.80rem;
+    color: oklch(0.500 0.020 180);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .source-item:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    margin-top: auto;
+    padding: 24px 0 20px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--muted);
+    border-top: 1px solid var(--glass-border);
+  }
+  footer .footer-heart {
+    color: oklch(0.650 0.180 0);
+  }
+
+  /* ─── Empty State ─── */
+  .empty-state {
+    text-align: center;
+    padding: 24px 16px 12px;
+  }
+  .empty-state svg {
+    width: 40px;
+    height: 40px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    opacity: 0.6;
+  }
+  .empty-state p {
+    color: var(--ink-dim);
+    font-size: 0.88rem;
+    font-weight: 500;
+  }
+  .empty-state p small {
+    display: block;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 540px) {
+    header { padding: 24px 0 20px; }
+    header h1 { font-size: 1.4rem; }
+    header p { font-size: 0.85rem; }
+    .brand-mark { width: 44px; height: 44px; }
+    .brand-mark svg { width: 22px; height: 22px; }
+
+    .search-section .glass { padding: 14px; }
+    .input-row { flex-direction: column; }
+    .input-wrap input { padding: 13px 44px 13px 14px; }
+    .btn-primary { width: 100%; padding: 13px; }
+
+    .quick-suggestions { gap: 6px; }
+    .chip { font-size: 0.75rem; padding: 6px 12px; }
+
+    .answer-card .glass { padding: 18px; }
+    .answer-text { font-size: 0.92rem; }
+
+    .bg-orbs .orb-1 { width: 300px; height: 300px; }
+    .bg-orbs .orb-2 { width: 250px; height: 250px; }
+    .bg-orbs .orb-3 { width: 200px; height: 200px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-orbs .orb,
+    .shimmer-line { animation: none; }
+    .bg-orbs .orb-1,
+    .bg-orbs .orb-2,
+    .bg-orbs .orb-3 { opacity: 0.2; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="bg-orbs">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+<div class="bg-grid"></div>
+<div class="bg-noise"></div>
+
+<div class="app-wrapper">
   <header>
-    <h1>🎓 <span>KFS</span> AI Assistant</h1>
+    <div class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+      </svg>
+    </div>
+    <h1><span class="kfs">KFS</span> <span class="ai">AI Assistant</span></h1>
     <p>مساعد ذكي لطلاب كلية الذكاء الاصطناعي — جامعة كفر الشيخ</p>
+    <div class="header-accent"></div>
   </header>
 
-  <div class="card">
-    <form id="questionForm" autocomplete="off">
-      <div class="input-group">
-        <input type="text" id="questionInput" placeholder="اكتب سؤالك هنا... (مثلاً: ما شروط القبول بالكلية؟)" required>
-        <button type="submit" id="submitBtn">✨ اسأل</button>
-      </div>
-    </form>
-  </div>
+  <section class="search-section">
+    <div class="glass">
+      <form id="questionForm" autocomplete="off">
+        <div class="input-row">
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="text" id="questionInput" placeholder="اسأل عن اللائحة الداخلية... (مثلاً: ما شروط القبول؟)" required>
+          </div>
+          <button type="submit" class="btn-primary" id="submitBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 2L11 13"/>
+              <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
+            </svg>
+            اسأل
+          </button>
+        </div>
+      </form>
 
-  <div class="error" id="errorBox"></div>
-
-  <div class="loading" id="loading">
-    <div class="spinner"></div>
-    <span>ببحث في اللائحة...</span>
-  </div>
-
-  <div class="card answer-card" id="answerCard">
-    <div id="exampleHints" style="margin-bottom:15px;">
-      <p style="color:#888;font-size:0.9rem;margin-bottom:10px;">💡 جرب تسأل حاجة زي:</p>
-      <div class="hint">
-        <span onclick="askQuick('ما شروط القبول في الكلية؟')">• ما شروط القبول في الكلية؟</span><br>
-        <span onclick="askQuick('أنا في المستوى التاني، أقدر أسجل كام ساعة؟')">• أنا في المستوى التاني، أقدر أسجل كام ساعة؟</span><br>
-        <span onclick="askQuick('إزاي بيحتسب الـ CGPA؟')">• إزاي بيحتسب الـ CGPA؟</span><br>
-        <span onclick="askQuick('مقرر BC211 بيتكلم عن إيه؟')">• مقرر BC211 بيتكلم عن إيه؟</span>
+      <div class="quick-suggestions">
+        <span class="label">اقتراحات سريعة</span>
+        <button class="chip" onclick="askQuick('ما شروط القبول في الكلية؟')" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+          شروط القبول
+        </button>
+        <button class="chip" onclick="askQuick('إزاي بيحتسب الـ CGPA؟')" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+          حساب التقدير
+        </button>
+        <button class="chip" onclick="askQuick('ما هو نظام الامتحانات؟')" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          الامتحانات
+        </button>
+        <button class="chip" onclick="askQuick('أنا في المستوى التاني، أقدر أسجل كام ساعة؟')" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          الساعات المسموحة
+        </button>
+        <button class="chip" onclick="askQuick('اقسملي مقررات المستوى الأول؟')" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          المقررات
+        </button>
       </div>
     </div>
-    <div class="answer-text" id="answerText"></div>
-    <div class="sources" id="sourcesContainer"></div>
+  </section>
+
+  <div class="error-box" id="errorBox" role="alert">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span id="errorText"></span>
   </div>
 
+  <div class="loading" id="loading">
+    <div class="shimmer">
+      <div class="shimmer-line"></div>
+      <div class="shimmer-line short"></div>
+    </div>
+    <div class="loading-text">ببحث في اللائحة الداخلية<span class="loading-dots"></span></div>
+  </div>
+
+  <section class="answer-section" id="answerSection">
+    <div class="answer-card">
+      <div class="glass">
+        <div class="answer-header">
+          <div class="answer-header-left">
+            <div class="answer-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </div>
+            <div class="answer-label">الإجابة <span>•</span> مدعومة بالذكاء الاصطناعي</div>
+          </div>
+          <button class="btn-icon" id="copyBtn" title="نسخ الإجابة" aria-label="نسخ الإجابة">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+        <div id="emptyState" class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <p>اطرح سؤالك<br><small>سيظهر الرد هنا مع المصادر من اللائحة الداخلية</small></p>
+        </div>
+        <div class="answer-text" id="answerText" style="display:none;"></div>
+
+        <div class="sources-section" id="sourcesContainer" style="display:none;">
+          <div class="sources-label">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+            </svg>
+            المصادر
+          </div>
+          <div id="sourcesList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <footer>
-    KFS AI Assistant — محمد عبد الفتاح & عبد الله نبيل
+    KFS AI Assistant — <span class="footer-heart">&hearts;</span> محمد عبد الفتاح &amp; عبد الله نبيل
   </footer>
 </div>
 
@@ -204,12 +774,15 @@
 const form = document.getElementById('questionForm');
 const input = document.getElementById('questionInput');
 const submitBtn = document.getElementById('submitBtn');
-const answerCard = document.getElementById('answerCard');
+const answerSection = document.getElementById('answerSection');
 const answerText = document.getElementById('answerText');
+const emptyState = document.getElementById('emptyState');
 const sourcesContainer = document.getElementById('sourcesContainer');
+const sourcesList = document.getElementById('sourcesList');
 const loading = document.getElementById('loading');
 const errorBox = document.getElementById('errorBox');
-const exampleHints = document.getElementById('exampleHints');
+const errorText = document.getElementById('errorText');
+const copyBtn = document.getElementById('copyBtn');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -218,8 +791,30 @@ form.addEventListener('submit', async (e) => {
   await ask(question);
 });
 
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    form.dispatchEvent(new Event('submit'));
+  }
+});
+
+copyBtn.addEventListener('click', () => {
+  const text = answerText.textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    copyBtn.classList.add('copied');
+    const original = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    setTimeout(() => {
+      copyBtn.innerHTML = original;
+      copyBtn.classList.remove('copied');
+    }, 2000);
+  }).catch(() => {});
+});
+
 async function ask(question) {
-  errorBox.classList.remove('visible');
+  resetUI();
+
   loading.classList.add('visible');
   submitBtn.disabled = true;
 
@@ -229,39 +824,74 @@ async function ask(question) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ question })
     });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
 
-    answerText.textContent = data.answer;
-    sourcesContainer.innerHTML = '';
-
-    if (data.sources && data.sources.length > 0) {
-      let html = '<h4>📚 المصادر:</h4>';
-      data.sources.forEach(s => {
-        if (s.article_title === 'N/A') return;
-        html += `<div class="source-item">
-          <div class="title">${s.article_title}</div>
-          <div class="section">القسم: ${s.section}</div>
-          <div class="preview">${s.text || ''}</div>
-        </div>`;
-      });
-      sourcesContainer.innerHTML = html;
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`تعذر الاتصال بالسيرفر (${res.status})`);
     }
 
-    exampleHints.style.display = 'none';
-    answerCard.classList.add('visible');
+    const data = await res.json();
+    showAnswer(data, question);
   } catch (err) {
-    errorBox.textContent = '❌ حصل خطأ: ' + err.message + '. تأكد من شغل السيرفر.';
-    errorBox.classList.add('visible');
+    showError(err.message);
   } finally {
     loading.classList.remove('visible');
     submitBtn.disabled = false;
+    input.focus();
   }
+}
+
+function resetUI() {
+  errorBox.classList.remove('visible');
+  answerSection.classList.remove('visible');
+  answerText.style.display = 'none';
+  sourcesContainer.style.display = 'none';
+  emptyState.style.display = 'block';
+}
+
+function showAnswer(data, question) {
+  emptyState.style.display = 'none';
+  answerText.textContent = data.answer;
+  answerText.style.display = 'block';
+  answerSection.classList.add('visible');
+
+  if (data.sources && data.sources.length > 0) {
+    let html = '';
+    const badges = ['primary', 'accent', 'success', 'primary', 'accent'];
+    data.sources.forEach((s, i) => {
+      if (s.article_title === 'N/A') return;
+      const badgeClass = badges[i % badges.length];
+      html += `<div class="source-item">
+        <div class="source-badge ${badgeClass}"></div>
+        <div class="source-content">
+          <div class="source-title ${badgeClass === 'accent' ? 'accent' : ''}">${escapeHtml(s.article_title)}</div>
+          <div class="source-meta">${escapeHtml(s.section || '')}</div>
+          ${s.text ? `<div class="source-preview">${escapeHtml(s.text.substring(0, 150))}${s.text.length > 150 ? '...' : ''}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    sourcesList.innerHTML = html;
+    sourcesContainer.style.display = 'block';
+  }
+
+  answerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function showError(msg) {
+  errorText.textContent = msg + '. تأكد من شغل السيرفر والمفتاح API.';
+  errorBox.classList.add('visible');
+  errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function askQuick(q) {
   input.value = q;
   ask(q);
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
 }
 </script>
 </body>
