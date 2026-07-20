@@ -1,13 +1,268 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KFS AI Assistant</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KFS AI Assistant</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: system-ui, 'Segoe UI', Tahoma, sans-serif;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+  .container { max-width: 700px; width: 100%; margin-top: 30px; }
+
+  header { text-align: center; margin-bottom: 30px; }
+  header h1 { font-size: 2rem; color: #fff; }
+  header h1 span { color: #e94560; }
+  header p { color: #888; margin-top: 6px; font-size: 0.95rem; }
+
+  .card {
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 16px;
+    padding: 25px;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    display: flex;
+    gap: 10px;
+  }
+  .input-group input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    background: #0f0f1a;
+    color: #e0e0e0;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: 0.2s;
+  }
+  .input-group input:focus { border-color: #e94560; }
+  .input-group input::placeholder { color: #555; }
+  .input-group button {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 12px;
+    background: #e94560;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+  }
+  .input-group button:hover { background: #d63850; }
+  .input-group button:disabled {
+    background: #555;
+    cursor: not-allowed;
+  }
+
+  .answer-card { display: none; }
+  .answer-card.visible { display: block; }
+
+  .answer-card .answer-text {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #d0d0e0;
+    white-space: pre-wrap;
+  }
+
+  .sources { margin-top: 20px; }
+  .sources h4 {
+    color: #e94560;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+  }
+  .source-item {
+    background: #0f0f1a;
+    border: 1px solid #2a2a4a;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
+  .source-item .title { color: #4ec9b0; font-weight: 600; font-size: 0.9rem; }
+  .source-item .section { color: #888; font-size: 0.8rem; }
+  .source-item .preview {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .loading {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    color: #888;
+  }
+  .loading.visible { display: block; }
+  .spinner {
+    width: 36px; height: 36px;
+    border: 3px solid #2a2a4a;
+    border-top: 3px solid #e94560;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .error {
+    display: none;
+    background: #2a0a0a;
+    border: 1px solid #e94560;
+    border-radius: 12px;
+    padding: 16px;
+    color: #e94560;
+    margin-bottom: 16px;
+  }
+  .error.visible { display: block; }
+
+  .hint {
+    text-align: center;
+    color: #555;
+    font-size: 0.85rem;
+    margin-top: 20px;
+  }
+  .hint span { color: #777; cursor: pointer; transition: 0.2s; }
+  .hint span:hover { color: #e94560; }
+
+  footer {
+    text-align: center;
+    color: #444;
+    font-size: 0.8rem;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #1a1a2e;
+    width: 100%;
+  }
+
+  @media (max-width: 500px) {
+    .input-group { flex-direction: column; }
+    .input-group button { width: 100%; }
+    header h1 { font-size: 1.5rem; }
+  }
+</style>
 </head>
 <body>
-    <h1>🎓 KFS AI Assistant</h1>
-    <p>مساعد ذكي لطلاب كلية الذكاء الاصطناعي - جامعة كفر الشيخ</p>
-    <p>— قيد التطوير —</p>
+
+<div class="container">
+  <header>
+    <h1>🎓 <span>KFS</span> AI Assistant</h1>
+    <p>مساعد ذكي لطلاب كلية الذكاء الاصطناعي — جامعة كفر الشيخ</p>
+  </header>
+
+  <div class="card">
+    <form id="questionForm" autocomplete="off">
+      <div class="input-group">
+        <input type="text" id="questionInput" placeholder="اكتب سؤالك هنا... (مثلاً: ما شروط القبول بالكلية؟)" required>
+        <button type="submit" id="submitBtn">✨ اسأل</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="error" id="errorBox"></div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <span>ببحث في اللائحة...</span>
+  </div>
+
+  <div class="card answer-card" id="answerCard">
+    <div id="exampleHints" style="margin-bottom:15px;">
+      <p style="color:#888;font-size:0.9rem;margin-bottom:10px;">💡 جرب تسأل حاجة زي:</p>
+      <div class="hint">
+        <span onclick="askQuick('ما شروط القبول في الكلية؟')">• ما شروط القبول في الكلية؟</span><br>
+        <span onclick="askQuick('أنا في المستوى التاني، أقدر أسجل كام ساعة؟')">• أنا في المستوى التاني، أقدر أسجل كام ساعة؟</span><br>
+        <span onclick="askQuick('إزاي بيحتسب الـ CGPA؟')">• إزاي بيحتسب الـ CGPA؟</span><br>
+        <span onclick="askQuick('مقرر BC211 بيتكلم عن إيه؟')">• مقرر BC211 بيتكلم عن إيه؟</span>
+      </div>
+    </div>
+    <div class="answer-text" id="answerText"></div>
+    <div class="sources" id="sourcesContainer"></div>
+  </div>
+
+  <footer>
+    KFS AI Assistant — محمد عبد الفتاح & عبد الله نبيل
+  </footer>
+</div>
+
+<script>
+const form = document.getElementById('questionForm');
+const input = document.getElementById('questionInput');
+const submitBtn = document.getElementById('submitBtn');
+const answerCard = document.getElementById('answerCard');
+const answerText = document.getElementById('answerText');
+const sourcesContainer = document.getElementById('sourcesContainer');
+const loading = document.getElementById('loading');
+const errorBox = document.getElementById('errorBox');
+const exampleHints = document.getElementById('exampleHints');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const question = input.value.trim();
+  if (!question) return;
+  await ask(question);
+});
+
+async function ask(question) {
+  errorBox.classList.remove('visible');
+  loading.classList.add('visible');
+  submitBtn.disabled = true;
+
+  try {
+    const res = await fetch('/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    answerText.textContent = data.answer;
+    sourcesContainer.innerHTML = '';
+
+    if (data.sources && data.sources.length > 0) {
+      let html = '<h4>📚 المصادر:</h4>';
+      data.sources.forEach(s => {
+        if (s.article_title === 'N/A') return;
+        html += `<div class="source-item">
+          <div class="title">${s.article_title}</div>
+          <div class="section">القسم: ${s.section}</div>
+          <div class="preview">${s.text || ''}</div>
+        </div>`;
+      });
+      sourcesContainer.innerHTML = html;
+    }
+
+    exampleHints.style.display = 'none';
+    answerCard.classList.add('visible');
+  } catch (err) {
+    errorBox.textContent = '❌ حصل خطأ: ' + err.message + '. تأكد من شغل السيرفر.';
+    errorBox.classList.add('visible');
+  } finally {
+    loading.classList.remove('visible');
+    submitBtn.disabled = false;
+  }
+}
+
+function askQuick(q) {
+  input.value = q;
+  ask(q);
+}
+</script>
 </body>
 </html>
