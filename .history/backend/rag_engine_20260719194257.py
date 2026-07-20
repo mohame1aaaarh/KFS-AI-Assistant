@@ -1,9 +1,12 @@
+import os
 import sys
 import chromadb
-import config
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
+
+# استدعاء ملف الإعدادات المركزي الخاص بكم
+import config
 
 class RAGEngine:
     def __init__(self, collection_name=config.COLLECTION_NAME):
@@ -17,7 +20,7 @@ class RAGEngine:
             # 1. الاتصال بقاعدة بيانات ChromaDB المحلية
             self.chroma_client = chromadb.PersistentClient(path=config.CHROMA_PATH)
             self.collection = self.chroma_client.get_or_create_collection(name=collection_name)
-
+            
             # 2. تهيئة عميل جوجل جمناي الرسمي
             self.ai_client = genai.Client(api_key=config.GOOGLE_API_KEY)
             print("Status: RAGEngine initialized successfully.")
@@ -69,22 +72,20 @@ class RAGEngine:
     def generate_answer(self, query, chunks):
         """Constructs the prompt template and requests generation from Gemini LLM."""
         if not chunks:
-            return "No sufficient information available in the system." if not self.is_arabic(
-                query) else "لا توجد معلومات كافية."
+            return "No sufficient information available in the system." if not self.is_arabic(query) else "لا توجد معلومات كافية."
 
         # 1. دمج النصوص المسترجعة (Context) في نص واحد مجمع
         context_text = "\n\n".join([f"--- Context Segment ---\n{c['text']}" for c in chunks])
 
         # 2. كشف لغة السؤال وبناء الـ System Instructions بناءً عليها
         if self.is_arabic(query):
-            system_prompt = (   
+            system_prompt = (
                 "أنت المساعد الأكاديمي الذكي لطلاب كلية الذكاء الاصطناعي بجامعة كفر الشيخ.\n"
-                "الطالب هيكلمك بالعامية المصرية وممكن يكتب كلام مكسر أو فيه أخطاء إملائية، افهمه كويس وبسط له الأمور.\n"
-                "جاوب على سؤال الطالب بناءً على الـ Context المرفق فقط، والتزم بالقوانين دي بدقة:\n"
-                "1. اتكلم بالعامية المصرية البسيطة والودودة (كأنك زميل له في الكلية بيفهمه اللائحة).\n"
-                "2. إجابتك لازم تكون مستوحاة تماماً وحصرياً من الـ Context المرفق، أوعى تألف مواد من عندك.\n"
-                "3. اذكر المصدر في آخر كلامك بشكل ودي (مثلاً: 'حسب المادة 12 من اللائحة').\n"
-                "4. لو المعلومة مش موجودة في الـ Context، قول له بوضوح وبالعامية: 'بص يا صاحبي، المعلومة دي مش واضحة في اللائحة الحالية'، وأوعى تخمن."
+                "أجب عن سؤال الطالب بناءً على المعلومات المقدمة في الـ Context المرفق فقط.\n"
+                "التزم بالقوانين التالية بدقة:\n"
+                "1. أجب فقط وحصرياً من المعلومات المذكورة في الـ Context.\n"
+                "2. اذكر المصدر دائماً (رقم المادة، أو اسم المقرر) في نهاية إجابتك إذا توفر في البيانات.\n"
+                "3. إذا كانت المعلومة المطلوبة غير موجودة بالكامل في الـ Context المرفق، أجب بعبارة: 'لا توجد معلومات كافية' ولا تقم بتأليف أي مواد قانونية من عندك نهائياً."
             )
             user_prompt = f"الـ Context المتاح من اللائحة:\n{context_text}\n\nسؤال الطالب: {query}"
         else:
@@ -104,7 +105,7 @@ class RAGEngine:
                 system_instruction=system_prompt,
                 temperature=0.3
             )
-
+            
             response = self.ai_client.models.generate_content(
                 model=config.GENERATION_MODEL,
                 contents=user_prompt,
@@ -122,7 +123,7 @@ class RAGEngine:
         """Main orchestrator function that connects retrieval and generation steps."""
         chunks = self.retrieve(query)
         answer = self.generate_answer(query, chunks)
-
+        
         # استخراج المصادر بشكل آمن يتفادى حدوث أي KeyError في الـ Metadata
         sources = []
         for c in chunks:
@@ -132,22 +133,21 @@ class RAGEngine:
                 "section": meta.get("section", "N/A"),
                 "text": c["text"][:200]  # اقتطاع أول 200 حرف للمعاينة فقط
             })
-
+            
         return {
             "answer": answer,
             "sources": sources
         }
 
-
 # حتة كود صغيرة تحت عشان تقدروا تختبروا الـ Class ده فوراً في الـ Terminal وتشوفوا النتيجة بعينكم
 if __name__ == "__main__":
     print("Status: Testing RAGEngine operation...")
     engine = RAGEngine()
-
+    
     # تجربة سؤال حي باللغة العربية
     sample_query = "ما هي شروط الحرمان من دخول الامتحان بسبب الغياب؟"
     print(f"\nTesting Query: '{sample_query}'")
-
+    
     result = engine.ask(sample_query)
     print("\n--- Model Response ---")
     print(result["answer"])

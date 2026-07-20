@@ -4,7 +4,32 @@ import config
 from google import genai
 from google.genai import types
 from google.genai.errors import APIError
+import builtins
+import arabic_reshaper
+from bidi.algorithm import get_display
 
+# 1. نحتفظ بالدالة الأصلية لبايثون عشان نستخدمها جوه
+_original_print = builtins.print
+
+def smart_print(*args, **kwargs):
+    """دالة طباعة ذكية تكشف العربي وتصلحه أوتوماتيكياً، وتترك الإنجليزي كما هو."""
+    processed_args = []
+    
+    for arg in args:
+        if isinstance(arg, str):
+            # كشف إذا كان النص يحتوي على حروف عربية
+            has_arabic = any('\u0600' <= char <= '\u06FF' for char in arg)
+            if has_arabic:
+                # تشكيل الحروف وقلب الاتجاه للعربي
+                reshaped = arabic_reshaper.reshape(arg)
+                arg = get_display(reshaped)
+        processed_args.append(arg)
+        
+    # المناداة على دالة الطباعة الأصلية بالنصوص المعدلة
+    return _original_print(*processed_args, **kwargs)
+
+# 2. اللعبة كلها هنا: استبدال print الافتراضية بالدالة الذكية بتاعتنا
+builtins.print = smart_print
 class RAGEngine:
     def __init__(self, collection_name=config.COLLECTION_NAME):
         """Initializes database connections and the Gemini API client."""
