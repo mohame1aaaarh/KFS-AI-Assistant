@@ -6,3 +6,4 @@ venv/
 .venv/
 chroma_db/
 backend/config.py
+.history/
