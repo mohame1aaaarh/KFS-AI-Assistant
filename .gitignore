@@ -4,5 +4,10 @@ __pycache__/
 .env
 venv/
 .venv/
-backend/config.py
 .history/
+
+# Config — المفتاح السري (gitignored)
+backend/config.py
+
+# ChromaDB — يتشكل تلقائياً عند تشغيل ingest.py
+chroma_db/
