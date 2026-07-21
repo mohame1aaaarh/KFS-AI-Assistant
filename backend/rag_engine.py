@@ -1,3 +1,32 @@
+"""RAG (Retrieval-Augmented Generation) Engine Module.
+
+This module provides a robust, production-ready RAG engine tailored for
+academic query resolution using ChromaDB for vector retrieval and Google's
+Gemini API for text embeddings and answer generation.
+
+Architecture Overview:
+    1. Retrieval Phase: Converts raw user queries into dense vector embeddings
+       using Gemini Embeddings (`task_type="RETRIEVAL_QUERY"`) and fetches
+       top-k relevant document chunks from ChromaDB.
+    2. Generation Phase: Constructs a context-aware system prompt (supporting
+       bilingual instructions: Egyptian Arabic & English) and streams/generates
+       grounded responses via Gemini LLM.
+
+Dependencies:
+    - chromadb
+    - google-genai
+    - config (custom local configuration file)
+
+Example Usage:
+    >>> from rag_engine import RAGEngine
+    >>> engine = RAGEngine()
+    >>> result = engine.ask("ما هي شروط التخرج من الكلية؟")
+    >>> print(result["answer"])
+
+Author: Faculty of AI Team
+Version: 1.0.0
+"""
+
 import sys
 import chromadb
 import config
@@ -6,6 +35,25 @@ from google.genai import types
 from google.genai.errors import APIError
 
 class RAGEngine:
+    """Production-grade Retrieval-Augmented Generation Orchestrator.
+
+    Integrates ChromaDB Persistent Client with Google GenAI SDK to perform
+    semantic search and grounded response generation. Specifically tuned
+    for university regulation processing in Egyptian Arabic dialect and English.
+
+    Attributes:
+        collection_name (str): The active ChromaDB collection name.
+        chroma_client (chromadb.PersistentClient): Persistent vector DB connection.
+        collection (chromadb.Collection): ChromaDB collection instance.
+        ai_client (genai.Client): Authenticated Google GenAI client instance.
+
+    Methods:
+        is_arabic(text): Heuristic check for Arabic Unicode characters.
+        retrieve(query, k): Fetches top-k relevant context chunks from ChromaDB.
+        generate_answer(query, chunks): Synthesizes grounded answers using Gemini.
+        ask(query): High-level orchestrator executing full RAG pipeline.
+    """
+    
     def __init__(self, collection_name=config.COLLECTION_NAME):
         """Initializes database connections and the Gemini API client."""
         # التحقق من وجود مفتاح الـ API
