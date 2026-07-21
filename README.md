@@ -21,10 +21,10 @@
 | المكون | التقنية |
 |---|---|
 | **Vector Store** | [ChromaDB](https://www.trychroma.com/) (تخزين محلي Persistent) |
-| **Embeddings** | [Gemini text-embedding-005](https://ai.google.dev/) |
-| **LLM** | [Gemini API](https://ai.google.dev/) (gemini-2.0-flash) |
+| **Embeddings** | [Gemini embedding-001](https://ai.google.dev/) |
+| **LLM** | [Gemini API](https://ai.google.dev/) (gemini-3.1-flash-lite) |
 | **Backend** | [FastAPI](https://fastapi.tiangolo.com/) + Uvicorn |
-| **Frontend** | HTML + CSS + JavaScript (Vanilla, MVP) |
+| **Frontend** | HTML + CSS + JavaScript (Glassmorphism + SVG icons) |
 
 ---
 
@@ -38,10 +38,11 @@ KFS-AI-Assistant/
 │   ├── app.py                   ← FastAPI server (endpoints)
 │   ├── rag_engine.py            ← RAG pipeline (embed → retrieve → generate)
 │   ├── ingest.py                ← تشغيل لمرة واحدة: بناء ChromaDB من chunks.json
-│   ├── chroma_db/               ← التخزين المتجه (يُنشأ تلقائياً)
-│   └── requirements.txt
+│   ├── config.py                  ← Gemini API key والإعدادات (gitignored)
+├── chroma_db/                 ← التخزين المتجه (يُنشأ تلقائياً)
+└── requirements.txt
 ├── frontend/
-│   └── (ملفات الواجهة - سيتم إنشاؤها لاحقاً)
+│   └── index.html              ← واجهة مستخدم بتصميم احترافي (Glassmorphism)
 ├── parse_chunks.py              ← Script تحويل MD إلى JSON chunks
 ├── README.md
 └── PLAN.md
@@ -56,44 +57,53 @@ KFS-AI-Assistant/
 - [x] تقسيم المحتوى إلى 102 chunk مع metadata لكل chunk
 - [x] حفظ النتيجة في `data/chunks.json`
 
-### المرحلة 2: بناء الـ Embedding Pipeline
-- [ ] تثبيت الحزم: `chromadb`, `google-genai`, `fastapi`
-- [ ] كتابة `backend/ingest.py`:
-  - قراءة `chunks.json`
-  - توليد embeddings باستخدام Gemini text-embedding-005
-  - تخزين الـ vectors في ChromaDB persistent collection
-- [ ] تشغيل `ingest.py` واختبار عدد الـ chunks المخزنة
+### المرحلة 2: بناء الـ Embedding Pipeline ✅ (مكتمل)
+- [x] تثبيت الحزم: `chromadb`, `google-genai`, `fastapi`
+- [x] كتابة `backend/ingest.py`:
+  - [x] قراءة `chunks.json`
+  - [x] توليد embeddings باستخدام Gemini embedding-001
+  - [x] تخزين الـ vectors في ChromaDB persistent collection
+- [x] تشغيل `ingest.py` — 102 chunk مخزنة بنجاح
 
-### المرحلة 3: بناء RAG Engine
-- [ ] كتابة `backend/rag_engine.py`:
-  - Class `RAGEngine` يحمل ChromaDB collection
-  - Method `retrieve(query, k=5)`: embedding → search → return chunks
-  - Method `generate_answer(query, chunks)`: context + question → Gemini → answer
-  - Method `ask(query)`: تجميع الخطوتين
+### المرحلة 3: بناء RAG Engine ✅ (مكتمل)
+- [x] كتابة `backend/rag_engine.py`:
+  - [x] Class `RAGEngine` يحمل ChromaDB collection
+  - [x] Method `retrieve(query, k=5)`: embedding → search → return chunks
+  - [x] Method `generate_answer(query, chunks)`: context + question → Gemini → answer
+  - [x] Method `ask(query)`: تجميع الخطوتين
+- [x] كشف لغة السؤال (عربي/إنجليزي) وبناء الـ prompt بنفس اللغة
+- [x] تعامل مع أخطاء 429 (quota exhausted)
 
-### المرحلة 4: بناء FastAPI Backend
-- [ ] كتابة `backend/app.py`:
-  - `POST /ask`: يستقبل `{ "question": "..." }` → يرجع `{ "answer": "...", "sources": [...] }`
-  - `GET /health`: فحص حالة السيرفر
-  - CORS مفتوح للفرونت إند
-  - تحميل `RAGEngine` عند startup
+### المرحلة 4: بناء FastAPI Backend ✅ (مكتمل)
+- [x] كتابة `backend/app.py`:
+  - [x] `POST /ask`: يستقبل `{ "question": "..." }` ← يرجع `{ "answer": "...", "sources": [...] }`
+  - [x] `GET /health`: فحص حالة السيرفر
+  - [x] CORS مفتوح للفرونت إند
+  - [x] يخدم ملفات الفرونت إند Statically
+  - [x] تحميل `RAGEngine` عند startup
 
-### المرحلة 5: بناء واجهة المستخدم
-- [ ] صفحة HTML بسيطة مع:
-  - حقل نصي للسؤال
-  - زر إرسال
-  - عرض الإجابة مع تمييز المصادر
-- [ ] CSS نظيف متجاوب (Mobile-first)
-- [ ] JavaScript للتعامل مع API
+### المرحلة 5: بناء واجهة المستخدم ✅ (مكتمل)
+- [x] صفحة HTML متكاملة مع:
+  - [x] حقل نصي للسؤال مع أيقونة بحث
+  - [x] زر إرسال (مع حالة تعطيل أثناء التحميل)
+  - [x] عرض الإجابة مع تمييز المصادر
+  - [x] زر نسخ الإجابة
+  - [x] زرايع اقتراحات سريعة
+- [x] تصميم Glassmorphism احترافي بخلفية متحركة
+- [x] نظام ألوان OKLCH (داكن + تيل/بنفسجي)
+- [x] أيقونات SVG بدل الإيموجي
+- [x] Shimmer loader بدل الـ spinner
+- [x] متجاوب مع الموبايل
+- [x] يحترم `prefers-reduced-motion`
 
-### المرحلة 6: اختبار وتجربة
-- [ ] تجربة الأسئلة الفعلية:
-  - *"ما شروط القبول في الكلية؟"*
-  - *"أنا في المستوى التاني، أقدر أسجل كام ساعة؟"*
-  - *"ازاي يحسب الـ CGPA؟"*
-  - *"مقرر BC211 بيتكلم عن إيه؟"*
-- [ ] التحقق من دقة الإجابات والمصادر
-- [ ] تجربة الأسئلة بالإنجليزية
+### المرحلة 6: اختبار وتجربة ✅ (مكتمل)
+- [x] تجربة الأسئلة الفعلية:
+  - [x] *"ما شروط القبول في الكلية؟"*
+  - [x] *"ما هي كلية الذكاء الاصطناعي؟"*
+  - [x] *"إزاي بيحتسب الـ CGPA؟"*
+  - [x] *"اقسملي مقررات المستوى الأول"*
+- [x] التحقق من دقة الإجابات والمصادر — الإجابات صحيحة مع المصادر من اللائحة
+- [x] اختبار كامل الـ pipeline: ingest → retrieve → generate → عرض
 
 ---
 
@@ -107,14 +117,15 @@ cd KFS-AI-Assistant
 # 2. تثبيت الحزم
 pip install -r backend/requirements.txt
 
-# 3. تعيين مفتاح Gemini API
-export GOOGLE_API_KEY="your-api-key-here"
+# 3. ضع مفتاح Gemini API في backend/config.py:
+#    GOOGLE_API_KEY = "AIzaSy..."
+#    (الملف موجود و gitignored)
 
 # 4. تجهيز قاعدة البيانات المتجهة (مرة واحدة فقط)
-python backend/ingest.py
+cd backend && python3 ingest.py
 
 # 5. تشغيل السيرفر
-cd backend && uvicorn app:app --reload
+uvicorn app:app --reload
 
 # 6. افتح المتصفح على:
 #    http://localhost:8000
