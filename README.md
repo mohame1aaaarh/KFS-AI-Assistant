@@ -56,7 +56,8 @@ KFS-AI-Assistant/
 │   └── requirements.txt
 ├── frontend/
 │   └── index.html                     ← واجهة المستخدم (RTL، عربي، glassmorphism)
-├── setup.sh                           ← سكريبت تشغيل آلي (لينكس/ماك)
+├── setup.py                           ← سكريبت تشغيل آلي (Windows / Linux / Mac)
+├── setup.sh                           ← بديل Bash (لينكس/ماك)
 ├── parse_chunks.js                    ← Script تحويل MD إلى JSON
 ├── .gitignore
 ├── README.md
@@ -69,20 +70,22 @@ KFS-AI-Assistant/
 
 > **معلومة:** قاعدة البيانات المتجهة (`chroma_db/`) موجودة بالفعل في المستودع بـ 102 embedding جاهزة. مش محتاج تشغل `ingest.py` إلا لو عاوز تعيد توليد الـ embeddings بنفسك.
 
-### 🧩 الطريقة التلقائية (Linux / Mac)
+### 🧩 الطريقة التلقائية (Windows / Linux / Mac)
 
 ```bash
 git clone https://github.com/mohame1aaaarh/KFS-AI-Assistant.git
 cd KFS-AI-Assistant
-bash setup.sh
+python setup.py
 ```
 
 السكريبت يعمل الآتي:
-1. يتحقق من وجود Python 3
+1. يتحقق من Python 3.10+
 2. يثبّت الحزم المطلوبة
-3. ينشئ `backend/config.py` من `config.example.py` ويطلب منك وضع مفتاح API
-4. يتأكد من وجود `chroma_db/` (يستخدم الجاهزة أو يشغّل `ingest.py` لو مش موجودة)
+3. ينشئ `backend/config.py` من `config.example.py` ويطلب وضع مفتاح API
+4. يتأكد من وجود `chroma_db/` (يستخدم الجاهزة أو يشغّل `ingest.py`)
 5. يطبع تعليمات تشغيل الخادم
+
+> بديل Bash (لينكس/ماك): `bash setup.sh`
 
 ### 🖐️ الطريقة اليدوية (جميع الأنظمة)
 
@@ -190,7 +193,7 @@ cd backend && uvicorn app:app --reload
 ج: لا. قاعدة البيانات المتجهة (`chroma_db/`) موجودة في المستودع. `ingest.py` مخصص للمطورين فقط عند تعديل `data/chunks.json`.
 
 **س: `setup.sh` مش شغال على Windows؟**
-ج: استخدم الطريقة اليدوية أعلاه، أو شغّله عبر Git Bash أو WSL.
+ج: استخدم `python setup.py` بدلاً منه — يشتغل على ويندوز ولينكس وماك.
 
 **س: عاوز أعيد بناء `chroma_db/` من الصفر؟**
 ج: `rm -rf chroma_db/ && cd backend && python3 ingest.py`
