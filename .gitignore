@@ -9,5 +9,3 @@ venv/
 # Config — المفتاح السري (gitignored)
 backend/config.py
 
-# ChromaDB — يتشكل تلقائياً عند تشغيل ingest.py
-chroma_db/
