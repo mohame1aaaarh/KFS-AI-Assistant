@@ -1,6 +1,6 @@
 import json, re
 
-MD_FILE = "gemini-code-1784297640531.md"
+MD_FILE = "اللائحة_الداخلية_لكلية_الذكاء_الاصطناعي.md"
 OUTPUT = "data/chunks.json"
 
 with open(MD_FILE, "r", encoding="utf-8") as f:
