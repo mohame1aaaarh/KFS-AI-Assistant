@@ -43,17 +43,21 @@
 ```
 KFS-AI-Assistant/
 ├── data/
-│   └── chunks.json              ← اللائحة مقسمة إلى 102 مقطع مع metadata
+│   └── chunks.json                    ← اللائحة مقسمة إلى 102 مقطع مع metadata
+├── chroma_db/                         ← قاعدة البيانات المتجهة (جاهزة — مش محتاج توليد)
+│   ├── chroma.sqlite3
+│   └── <uuid>/data_level0.bin, ...    ← embeddings الجاهزة (102 chunk)
 ├── backend/
-│   ├── app.py                   ← FastAPI: نقاط الوصول (POST /ask, GET /health)
-│   ├── rag_engine.py            ← قلب النظام: تضمين → بحث → توليد
-│   ├── ingest.py                ← تشغيل لمرة واحدة: بناء ChromaDB من chunks.json
-│   ├── config.py                ← إعداداتك الخاصة (gitignored — انشئه من example)
-│   ├── config.example.py        ← قالب لملف الإعدادات
+│   ├── app.py                         ← FastAPI: نقاط الوصول (POST /ask, GET /health)
+│   ├── rag_engine.py                  ← قلب النظام: تضمين → بحث → توليد
+│   ├── ingest.py                      ← تشغيل لمرة واحدة: بناء ChromaDB من chunks.json
+│   ├── config.py                      ← إعداداتك الخاصة (gitignored — انشئه من example)
+│   ├── config.example.py              ← قالب لملف الإعدادات
 │   └── requirements.txt
 ├── frontend/
-│   └── index.html               ← واجهة المستخدم (RTL، عربي، glassmorphism)
-├── parse_chunks.py              ← Script تحويل MD إلى JSON
+│   └── index.html                     ← واجهة المستخدم (RTL، عربي، glassmorphism)
+├── setup.sh                           ← سكريبت تشغيل آلي (لينكس/ماك)
+├── parse_chunks.js                    ← Script تحويل MD إلى JSON
 ├── .gitignore
 ├── README.md
 └── PLAN.md
@@ -63,49 +67,47 @@ KFS-AI-Assistant/
 
 ## 🚀 التشغيل السريع
 
-### 1. استنساخ المشروع
+> **معلومة:** قاعدة البيانات المتجهة (`chroma_db/`) موجودة بالفعل في المستودع بـ 102 embedding جاهزة. مش محتاج تشغل `ingest.py` إلا لو عاوز تعيد توليد الـ embeddings بنفسك.
+
+### 🧩 الطريقة التلقائية (Linux / Mac)
 
 ```bash
 git clone https://github.com/mohame1aaaarh/KFS-AI-Assistant.git
 cd KFS-AI-Assistant
+bash setup.sh
 ```
 
-### 2. تثبيت الحزم
+السكريبت يعمل الآتي:
+1. يتحقق من وجود Python 3
+2. يثبّت الحزم المطلوبة
+3. ينشئ `backend/config.py` من `config.example.py` ويطلب منك وضع مفتاح API
+4. يتأكد من وجود `chroma_db/` (يستخدم الجاهزة أو يشغّل `ingest.py` لو مش موجودة)
+5. يطبع تعليمات تشغيل الخادم
+
+### 🖐️ الطريقة اليدوية (جميع الأنظمة)
 
 ```bash
+# 1. استنساخ
+git clone https://github.com/mohame1aaaarh/KFS-AI-Assistant.git
+cd KFS-AI-Assistant
+
+# 2. تثبيت الحزم
 pip install -r backend/requirements.txt
-```
 
-### 3. إعداد مفتاح Gemini API
-
-1. افتح [ai.google.dev](https://ai.google.dev/) وضغط **Get API Key**
-2. انسخ المفتاح (يبدأ بـ `AIzaSy...`)
-3. انسخ ملف القالب:
-
-```bash
+# 3. إعداد مفتاح Gemini API
 cp backend/config.example.py backend/config.py
-```
+# افتح backend/config.py وضع مفتاحك مكان AIzaSyYourActualKeyGoesHere
+# احصل على مفتاح من: https://ai.google.dev
 
-4. افتح `backend/config.py` وضع المفتاح مكان `AIzaSyYourActualKeyGoesHere`
-
-### 4. تجهيز قاعدة البيانات المتجهة (مرة واحدة)
-
-```bash
-cd backend && python3 ingest.py
-```
-
-> يقرأ `data/chunks.json`، يولّد embeddings عبر Gemini API، ويخزنها في `chroma_db/`.
-> العدد المتوقع: **102 مقطع** — سيظهر `Success: Ingestion complete. Total record count: 102`.
-
-### 5. تشغيل الخادم
-
-```bash
+# 4. تشغيل الخادم (chroma_db جاهزة — لا تحتاج ingest.py)
 cd backend && uvicorn app:app --reload
 ```
 
-### 6. افتح المتصفح
+### ✅ افتح المتصفح
 
 [http://localhost:8000](http://localhost:8000)
+
+> **ملاحظة:** `ingest.py` موجود للمطورين اللي عاوزين يعيدوا توليد الـ embeddings بأنفسهم. المستخدم العادي مش محتاج يشغّله — `chroma_db/` جاهزة في المستودع.
 
 ---
 
@@ -129,21 +131,30 @@ cd backend && uvicorn app:app --reload
 ### إعداد بيئة التطوير
 
 ```bash
-# Fork الـ repo
+# 1. Fork الـ repo
 git clone https://github.com/<your-username>/KFS-AI-Assistant.git
 cd KFS-AI-Assistant
 
-# إنشاء فرع للميزة الجديدة
+# 2. إنشاء فرع للميزة الجديدة
 git checkout -b feature/your-feature
 
-# (اختياري) بيئة افتراضية
+# 3. (اختياري) بيئة افتراضية
 python3 -m venv venv
-source venv/bin/activate  # أو venv\Scripts\activate في Windows
+source venv/bin/activate
+
+# 4. تثبيت الحزم
 pip install -r backend/requirements.txt
 
-# cp config.example.py → config.py ← ضع مفتاحك
-# شغّل ingest.py ← شغّل uvicorn
+# 5. إعداد المفتاح
+cp backend/config.example.py backend/config.py
+# افتح backend/config.py ← ضع مفتاح Gemini API
+
+# 6. قاعدة البيانات جاهزة — شغّل الخادم مباشرة
+cd backend && uvicorn app:app --reload
 ```
+
+> **ملاحظة:** لو غيرت البيانات في `data/chunks.json`، شغّل `python3 ingest.py` لإعادة بناء `chroma_db/`.
+> وفّرت الـ embeddings للمستخدمين الجدد — ارجع `chroma_db/` في git لو أضفت chunks جديدة.
 
 ### أفكار للمساهمة
 
@@ -166,7 +177,7 @@ pip install -r backend/requirements.txt
 
 ## ❓ الأسئلة الشائعة
 
-**س: أجد خطأ `401 UNAUTHENTICATED` عند تشغيل `ingest.py`؟**
+**س: أجد خطأ `401 UNAUTHENTICATED`؟**
 ج: مفتاح Gemini API غير صحيح. تأكد من أن `backend/config.py` يحتوي على مفتاح صحيح من [ai.google.dev](https://ai.google.dev/).
 
 **س: أجد خطأ `429 RESOURCE_EXHAUSTED`؟**
@@ -175,8 +186,14 @@ pip install -r backend/requirements.txt
 **س: أجد خطأ `Address already in use` عند تشغيل Uvicorn؟**
 ج: الخادم مشغول بالفعل. استخدم `kill -9 $(lsof -ti:8000)` لوقف العملية القديمة.
 
-**س: وجدت مجلدي `chroma_db` — واحد داخل `backend/` وآخر خارجه؟**
-ج: تأكد من أن `config.py` يشير إلى `CHROMA_PATH = "../chroma_db"` (مسار واحد موحد خارج `backend/`). احذف أي نسخة داخل `backend/`.
+**س: هل أحتاج تشغيل `ingest.py`؟**
+ج: لا. قاعدة البيانات المتجهة (`chroma_db/`) موجودة في المستودع. `ingest.py` مخصص للمطورين فقط عند تعديل `data/chunks.json`.
+
+**س: `setup.sh` مش شغال على Windows؟**
+ج: استخدم الطريقة اليدوية أعلاه، أو شغّله عبر Git Bash أو WSL.
+
+**س: عاوز أعيد بناء `chroma_db/` من الصفر؟**
+ج: `rm -rf chroma_db/ && cd backend && python3 ingest.py`
 
 ---
 
