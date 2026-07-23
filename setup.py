@@ -51,16 +51,22 @@ def ensure_chromadb():
         err("فشل تشغيل ingest.py")
     ok("تم بناء قاعدة البيانات")
 
-def print_instructions():
+def start_server():
     print(f"\n{'='*50}")
-    print(f"  {clr(36)}KFS AI Assistant — جاهز للتشغيل{clr(0)}")
-    print(f"{'='*50}")
-    print(f"\n  شغّل السيرفر:")
-    print(f"\n    {clr(36)}cd backend && {sys.executable} -m uvicorn app:app --reload{clr(0)}")
-    print(f"\n  أو على ويندوز:")
-    print(f"\n    {clr(36)}cd backend{clr(0)}")
-    print(f"    {clr(36)}python -m uvicorn app:app --reload{clr(0)}")
-    print(f"\n  ثم افتح {clr(36)}http://localhost:8000{clr(0)} في المتصفح\n")
+    print(f"  {clr(36)}KFS AI Assistant — بدء تشغيل السيرفر...{clr(0)}")
+    print(f"{'='*50}\n")
+    print(f"  الموقع يعمل الآن على: {clr(36)}http://localhost:8000{clr(0)}\n")
+    
+    backend_dir = os.path.join(ROOT, "backend")
+    
+    # تشغيل uvicorn مباشرة وبقاء السكربت معلقاً يستمع للطلبات
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "uvicorn", "app:app", "--reload"],
+            cwd=backend_dir
+        )
+    except KeyboardInterrupt:
+        print(f"\n{clr(31)}تم إيقاف السيرفر.{clr(0)}")
 
 def main():
     print(f"\n{clr(36)}بدء تجهيز KFS AI Assistant...{clr(0)}\n")
@@ -75,7 +81,9 @@ def main():
 
     ensure_config()
     ensure_chromadb()
-    print_instructions()
+    
+    # بدلاً من مجرد طباعة التعليمات، يتم تشغيل السيرفر فوراً
+    start_server()
 
 if __name__ == "__main__":
     main()
