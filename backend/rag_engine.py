@@ -124,8 +124,8 @@ class RAGEngine:
 
         # 1. دمج النصوص المسترجعة (Context) في نص واحد مجمع
         context_text = "\n\n".join([f"--- Context Segment ---\n{c['text']}" for c in chunks])
-
-        # 2. كشف لغة السؤال وبناء الـ System Instructions بناءً عليها
+        
+        # Checking wether to use Arabic or English system prompt based on the query language
         system_prompt = prompts.SYSTEM_PROMPT_AR if self.is_arabic(query) else prompts.SYSTEM_PROMPT_EN
         
         if self.is_arabic(query):
