@@ -490,6 +490,28 @@
     margin-bottom: 0.75em;
   }
   .answer-text p:last-child { margin-bottom: 0; }
+  .answer-text strong { color: var(--primary); font-weight: 700; }
+  .answer-text em { color: var(--accent); }
+  .answer-text ul, .answer-text ol { margin: 0.5em 0; padding-right: 1.5em; }
+  .answer-text li { margin-bottom: 0.3em; }
+  .answer-text hr {
+    border: none;
+    height: 1px;
+    background: var(--glass-border);
+    margin: 1em 0;
+  }
+  .answer-text h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 1em 0 0.5em;
+  }
+  .answer-text h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink-dim);
+    margin: 0.8em 0 0.4em;
+  }
 
   /* ─── Sources ─── */
   .sources-section {
@@ -783,6 +805,7 @@ const loading = document.getElementById('loading');
 const errorBox = document.getElementById('errorBox');
 const errorText = document.getElementById('errorText');
 const copyBtn = document.getElementById('copyBtn');
+let lastAnswer = '';
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -799,9 +822,8 @@ input.addEventListener('keydown', (e) => {
 });
 
 copyBtn.addEventListener('click', () => {
-  const text = answerText.textContent;
-  if (!text) return;
-  navigator.clipboard.writeText(text).then(() => {
+  if (!lastAnswer) return;
+  navigator.clipboard.writeText(lastAnswer).then(() => {
     copyBtn.classList.add('copied');
     const original = copyBtn.innerHTML;
     copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
@@ -851,7 +873,8 @@ function resetUI() {
 
 function showAnswer(data, question) {
   emptyState.style.display = 'none';
-  answerText.textContent = data.answer;
+  lastAnswer = data.answer;
+  answerText.innerHTML = renderMarkdown(escapeHtml(data.answer));
   answerText.style.display = 'block';
   answerSection.classList.add('visible');
 
@@ -892,6 +915,59 @@ function escapeHtml(str) {
   const div = document.createElement('div');
   div.textContent = str;
   return div.innerHTML;
+}
+
+function renderMarkdown(text) {
+  const lines = text.split('\n');
+  const out = [];
+  let inList = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+
+    if (!line.trim()) {
+      if (inList) { out.push(`</${inList}>`); inList = null; }
+      continue;
+    }
+
+    const heading3 = line.match(/^###\s+(.*)/);
+    if (heading3) { if (inList) { out.push(`</${inList}>`); inList = null; } out.push(`<h3>${heading3[1]}</h3>`); continue; }
+
+    const heading4 = line.match(/^##\s+(.*)/);
+    if (heading4) { if (inList) { out.push(`</${inList}>`); inList = null; } out.push(`<h4>${heading4[1]}</h4>`); continue; }
+
+    const header1 = line.match(/^#\s+(.*)/);
+    if (header1) { if (inList) { out.push(`</${inList}>`); inList = null; } out.push(`<h3>${header1[1]}</h3>`); continue; }
+
+    const hrMatch = line.match(/^(-{3,}|\*{3,})$/);
+    if (hrMatch) { if (inList) { out.push(`</${inList}>`); inList = null; } out.push('<hr>'); continue; }
+
+    const ulMatch = line.match(/^[-*]\s+(.*)/);
+    if (ulMatch) {
+      if (inList !== 'ul') { if (inList) out.push(`</${inList}>`); out.push('<ul>'); inList = 'ul'; }
+      out.push(`<li>${inlineFormat(ulMatch[1])}</li>`);
+      continue;
+    }
+
+    const olMatch = line.match(/^\d+[.)]\s+(.*)/);
+    if (olMatch) {
+      if (inList !== 'ol') { if (inList) out.push(`</${inList}>`); out.push('<ol>'); inList = 'ol'; }
+      out.push(`<li>${inlineFormat(olMatch[1])}</li>`);
+      continue;
+    }
+
+    if (inList) { out.push(`</${inList}>`); inList = null; }
+    out.push(`<p>${inlineFormat(line)}</p>`);
+  }
+
+  if (inList) out.push(`</${inList}>`);
+  return out.join('\n');
+}
+
+function inlineFormat(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
 </script>
 </body>
