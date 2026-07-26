@@ -50,6 +50,7 @@ KFS-AI-Assistant/
 ├── backend/
 │   ├── app.py                         ← FastAPI: نقاط الوصول (POST /ask, GET /health)
 │   ├── rag_engine.py                  ← قلب النظام: تضمين → بحث → توليد
+│   ├── prompts.py                     ← نصوص system prompts (عربي/إنجليزي)
 │   ├── ingest.py                      ← تشغيل لمرة واحدة: بناء ChromaDB من chunks.json
 │   ├── config.py                      ← إعداداتك الخاصة (gitignored — انشئه من example)
 │   ├── config.example.py              ← قالب لملف الإعدادات
@@ -58,7 +59,7 @@ KFS-AI-Assistant/
 │   └── index.html                     ← واجهة المستخدم (RTL، عربي، glassmorphism)
 ├── setup.py                           ← سكريبت تشغيل آلي (Windows / Linux / Mac)
 ├── setup.sh                           ← بديل Bash (لينكس/ماك)
-├── parse_chunks.js                    ← Script تحويل MD إلى JSON
+├── parse_chunks.py                    ← Script تحويل MD إلى JSON
 ├── .gitignore
 ├── README.md
 └── PLAN.md

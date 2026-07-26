@@ -9,3 +9,6 @@ venv/
 # Config — المفتاح السري (gitignored)
 backend/config.py
 
+# ChromaDB داخل backend — نسخة قديمة/خاطئة
+backend/chroma_db/
+
