@@ -1,3 +1,21 @@
+"""Data Ingestion Pipeline Module.
+
+This module handles parsing, batch vector embedding generation, and persistent 
+storage for university regulation chunks into ChromaDB using Google's Gemini API.
+
+Architecture Overview:
+    1. Parsing Phase: Reads and validates the raw JSON document chunks, ensuring 
+       all mandatory fields (IDs, text, metadata) are intact.
+    2. Embedding Phase: Processes text chunks in batches (e.g., 50 chunks per batch) 
+       via Gemini Embeddings to prevent API rate limits and memory overhead.
+    3. Ingestion Phase: Registers the computed dense vector embeddings along with 
+       their corresponding text and metadata into the persistent ChromaDB store.
+
+Dependencies:
+    - chromadb
+    - google-genai
+    - config (custom local configuration file)
+"""
 import os
 import sys
 import json
@@ -27,20 +45,20 @@ def load_chunks_json(file_path):
 
 def ingest_data():
     """Main function to handle chunk loading, batch embedding generation, and ChromaDB ingestion."""
-    # التحقق من أن المفتاح مش فاضي جوه ملف الـ config
+    # Ensure API key is set in config
     if not config.GOOGLE_API_KEY or config.GOOGLE_API_KEY == "AIzaSyYourActualKeyGoesHere":
         print("Error: GOOGLE_API_KEY is not configured properly in config.py")
         sys.exit(1)
 
     print("Status: Initializing Embedding Pipeline...")
 
-    # تحميل البيانات باستخدام المسار المعرف في الـ config
+    # Load data using path defined in config
     chunks = load_chunks_json(config.CHUNKS_PATH)
     if not chunks:
         print("Warning: The JSON data file is empty or contains no valid chunks.")
         return
 
-    # فتح الاتصال بقاعدة البيانات والـ API بناءً على متغيرات الـ config
+    # Initialize DB client and GenAI client from config vars
     try:
         chroma_client = chromadb.PersistentClient(path=config.CHROMA_PATH)
         collection = chroma_client.get_or_create_collection(name=config.COLLECTION_NAME)
@@ -49,7 +67,7 @@ def ingest_data():
         print(f"Error: Client initialization failed for ChromaDB or Gemini API: {str(e)}")
         sys.exit(1)
 
-    # تجميع البيانات في الذاكرة
+    # Accumulate data in memory
     ids = []
     documents = []
     metadatas = []
@@ -68,11 +86,11 @@ def ingest_data():
         print("Warning: No valid records identified for ingestion.")
         return
 
-    # إرسال طلب الـ Embedding على مجموعات (Batches) لتفادي حد الـ 100 طلب من جوجل
+    # Process embeddings in batches to stay within Google API limits
     print(f"Status: Generating vector embeddings for {len(texts_to_embed)} chunks using Google Gemini API...")
     try:
         embeddings = []
-        batch_size = 50  # تقسيم الـ 102 chunk لمجموعات آمنة من 50 قطعة
+        batch_size = 50  # Split 102 chunks into safe batches of 50
         
         for i in range(0, len(texts_to_embed), batch_size):
             batch_texts = texts_to_embed[i:i + batch_size]
@@ -83,11 +101,11 @@ def ingest_data():
                 contents=batch_texts
             )
             
-            # تجميع الـ embeddings المتولدة من الـ batch الحالي
+            # Collect generated embeddings for the current batch
             batch_embeddings = [emb.values for emb in response.embeddings]
             embeddings.extend(batch_embeddings)
 
-        # تخزين البيانات والـ Embeddings بالكامل داخل ChromaDB دفعة واحدة
+        # Store all records and embeddings in ChromaDB
         print("Status: Committing records to ChromaDB storage...")
         collection.add(
             ids=ids,
