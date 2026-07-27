@@ -55,7 +55,12 @@ def ask(q: Question):
 
 @app.post("/calculate-gpa")
 def calculate_gpa(payload: GPARequest):
-    raw_semesters = [sem.dict() for sem in payload.semesters]
+    # تحويل البيانات إلى Python dict بأمان
+    try:
+        raw_semesters = payload.model_dump()["semesters"]
+    except AttributeError:
+        raw_semesters = payload.dict()["semesters"]
+
     return GPAEngine.calculate_cgpa(raw_semesters)
 
 
