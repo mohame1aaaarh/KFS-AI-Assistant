@@ -191,6 +191,48 @@
     opacity: 0.6;
   }
 
+    /* ─── Tab Navigation ─── */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin: 0 auto 24px;
+    padding: 4px;
+    border-radius: var(--radius-md);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    max-width: 420px;
+    width: 100%;
+    direction: ltr;
+  }
+  .tabs[dir="rtl"] { direction: rtl; }
+  .tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 14px;
+    border: none;
+    border-radius: calc(var(--radius-md) - 4px);
+    background: transparent;
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--ink); }
+  .tab.active {
+    background: var(--primary);
+    color: var(--ink);
+    box-shadow: 0 2px 12px var(--primary-glow);
+  }
+  .tab .tab-icon { font-size: 1rem; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
   /* ─── Glass Card ─── */
   .glass {
     background: var(--glass-bg);
@@ -630,6 +672,460 @@
     margin-top: 4px;
   }
 
+  /* ═══════════════════════════════════════════
+     📊 GPA CALCULATOR — حاسبة المعدل التراكمي
+     الكود من تطوير: محمد عبد الفتاح & عبد الله نبيل
+     كلية الذكاء الاصطناعي — جامعة كفر الشيخ
+     ═══════════════════════════════════════════ */
+
+  .gpa-toolbar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .gpa-toolbar .grow { flex: 1; min-width: 140px; }
+
+  .gpa-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+  }
+
+  select.gpa-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: oklch(0.050 0.000 0 / 0.50);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left 12px center;
+    padding-left: 36px;
+  }
+  select.gpa-select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-subtle); }
+  select.gpa-select option { background: var(--bg); color: var(--ink); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    background: oklch(1 0 0 / 0.03);
+    color: var(--ink-dim);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-subtle); }
+  .btn-secondary:active { transform: scale(0.97); }
+  .btn-secondary svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .btn-danger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 20px;
+    border: 1.5px solid transparent;
+    border-radius: var(--radius-md);
+    background: var(--error-bg);
+    color: var(--error);
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+  }
+  .btn-danger:hover { border-color: oklch(0.600 0.180 30 / 0.3); }
+  .btn-danger:active { transform: scale(0.97); }
+
+  /* ─── Semester Card ─── */
+  .semester-card { margin-bottom: 16px; }
+  .semester-card .glass { padding: 18px 20px; }
+
+  .semester-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+  .semester-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .semester-title .sem-icon {
+    width: 28px; height: 28px;
+    border-radius: var(--radius-sm);
+    background: var(--primary-subtle);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.85rem;
+  }
+
+  .semester-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .semester-summary {
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  /* ─── Course Row ─── */
+  .course-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid oklch(1 0 0 / 0.04);
+  }
+  .course-row:last-child { border-bottom: none; }
+
+  .course-code {
+    width: 52px;
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: 0.02em;
+    text-align: center;
+  }
+  .course-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .course-hours {
+    width: 36px;
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    color: var(--muted);
+    text-align: center;
+    font-weight: 600;
+  }
+  .course-input {
+    width: 68px;
+    flex-shrink: 0;
+  }
+  .course-input input {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1.5px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    background: oklch(0.050 0.000 0 / 0.50);
+    color: var(--ink);
+    font-family: inherit;
+    font-size: 0.85rem;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  }
+  .course-input input:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-subtle); }
+  .course-input input::placeholder { color: var(--muted); font-size: 0.75rem; }
+
+  .course-points {
+    width: 48px;
+    flex-shrink: 0;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+    transition: color 0.3s ease;
+  }
+  .course-points.high { color: var(--success); }
+  .course-points.mid { color: var(--primary); }
+  .course-points.low { color: oklch(0.600 0.180 30); }
+  .course-points.fail { color: var(--error); }
+
+  .course-retake {
+    width: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .course-retake input[type="checkbox"] {
+    width: 16px; height: 16px;
+    accent-color: var(--primary);
+    cursor: pointer;
+  }
+
+  .course-retake-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-align: center;
+    margin-top: 1px;
+  }
+
+  /* ─── Semester Subtotal ─── */
+  .semester-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 12px;
+    margin-top: 8px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .semester-total-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .semester-total-label {
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    font-weight: 600;
+  }
+  .semester-total-value {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--primary);
+  }
+  .semester-total-points {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* ─── Info Banner ─── */
+  .gpa-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: var(--primary-subtle);
+    border: 1px solid oklch(0.620 0.140 180 / 0.15);
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .gpa-info svg {
+    width: 18px; height: 18px;
+    flex-shrink: 0;
+    color: var(--primary);
+    margin-top: 2px;
+  }
+
+  /* ─── Buttons row ─── */
+  .gpa-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  /* ─── Results Panel ─── */
+  .gpa-results { display: none; margin-bottom: 20px; }
+  .gpa-results.visible { display: block; }
+
+  .gpa-results .glass { padding: 24px; }
+
+  .result-hero {
+    text-align: center;
+    padding: 16px 0 20px;
+  }
+  .result-cgpa {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), oklch(0.650 0.150 190));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+  .result-cgpa.honors {
+    background: linear-gradient(135deg, oklch(0.720 0.180 280), oklch(0.620 0.140 180));
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  .result-grade {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 6px;
+  }
+  .result-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+  .result-status.pass { background: oklch(0.650 0.150 160 / 0.15); color: var(--success); }
+  .result-status.fail { background: var(--error-bg); color: var(--error); }
+
+  /* ─── Result Stats Grid ─── */
+  .result-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .stat-card {
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background: oklch(1 0 0 / 0.03);
+    border: 1px solid var(--glass-border);
+    text-align: center;
+  }
+  .stat-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--ink);
+  }
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* ─── Result Honor Badge ─── */
+  .honors-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+  .honors-badge.eligible {
+    background: oklch(0.720 0.180 280 / 0.12);
+    border: 1px solid oklch(0.720 0.180 280 / 0.25);
+    color: oklch(0.720 0.180 280);
+  }
+  .honors-badge.not-eligible {
+    background: oklch(1 0 0 / 0.03);
+    border: 1px solid var(--glass-border);
+    color: var(--ink-dim);
+  }
+
+  /* ─── Result Semester Breakdown ─── */
+  .result-breakdown {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .breakdown-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--ink-dim);
+    margin-bottom: 12px;
+  }
+  .breakdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    background: oklch(1 0 0 / 0.02);
+    margin-bottom: 4px;
+    font-size: 0.82rem;
+  }
+  .breakdown-row .bd-label { color: var(--ink); font-weight: 500; }
+  .breakdown-row .bd-gpa { font-weight: 700; color: var(--primary); }
+  .breakdown-row .bd-grade { color: var(--ink-dim); font-size: 0.78rem; }
+  .breakdown-row .bd-h { color: var(--muted); font-size: 0.72rem; }
+
+  .btn-full {
+    width: 100%;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  /* ─── Empty GPA State ─── */
+  .gpa-empty {
+    text-align: center;
+    padding: 40px 16px;
+  }
+  .gpa-empty svg {
+    width: 48px; height: 48px;
+    color: var(--muted);
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+  .gpa-empty p {
+    color: var(--ink-dim);
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+  .gpa-empty p small {
+    display: block;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-top: 6px;
+  }
+
+  /* ─── Responsive GPA ─── */
+  @media (max-width: 540px) {
+    .course-row {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 0;
+    }
+    .course-code { width: 44px; font-size: 0.7rem; }
+    .course-name { width: calc(100% - 54px); font-size: 0.8rem; }
+    .course-hours { width: 30px; font-size: 0.65rem; }
+    .course-input { width: 60px; }
+    .course-input input { padding: 5px 6px; font-size: 0.8rem; }
+    .course-points { width: 40px; font-size: 0.75rem; }
+    .course-retake { width: 24px; }
+
+    .gpa-toolbar { flex-direction: column; }
+    .gpa-toolbar .grow { width: 100%; }
+    .semester-card .glass { padding: 14px; }
+    .semester-title { font-size: 0.85rem; }
+    .semester-actions .semester-summary { display: none; }
+
+    .result-cgpa { font-size: 2.2rem; }
+    .result-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .stat-card { padding: 10px; }
+    .stat-value { font-size: 1.1rem; }
+
+    .tabs { max-width: 100%; }
+    .tab { font-size: 0.78rem; padding: 8px 10px; gap: 4px; }
+  }
+
   /* ─── Responsive ─── */
   @media (max-width: 540px) {
     header { padding: 24px 0 20px; }
@@ -684,6 +1180,21 @@
     <p>مساعد ذكي لطلاب كلية الذكاء الاصطناعي — جامعة كفر الشيخ</p>
     <div class="header-accent"></div>
   </header>
+
+  <!--
+    🧭 Tabs — التبديل بين المساعد الذكي وحاسبة GPA
+    الكود من تطوير: محمد عبد الفتاح & عبد الله نبيل
+  -->
+  <div class="tabs" role="tablist" dir="rtl">
+    <button class="tab active" data-tab="assistant" role="tab" aria-selected="true">
+      <span class="tab-icon">🧠</span> المساعد الذكي
+    </button>
+    <button class="tab" data-tab="gpa" role="tab" aria-selected="false">
+      <span class="tab-icon">📊</span> حاسبة GPA
+    </button>
+  </div>
+
+  <section class="tab-content active" id="tab-assistant">
 
   <section class="search-section">
     <div class="glass">
@@ -786,6 +1297,115 @@
       </div>
     </div>
   </section>
+
+  </section><!-- /tab-assistant -->
+
+  <!--
+    ═══════════════════════════════════════════════════════════
+    📊 GPA CALCULATOR — حاسبة المعدل التراكمي
+    الكود من تطوير: محمد عبد الفتاح & عبد الله نبيل
+    كلية الذكاء الاصطناعي — جامعة كفر الشيخ
+    ═══════════════════════════════════════════════════════════
+  -->
+  <section class="tab-content" id="tab-gpa">
+
+    <div class="gpa-info">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+      </svg>
+      <div>حسب المادة (15) من اللائحة الداخلية: GPA = مجموع (نقاط المادة × ساعاتها) ÷ مجموع الساعات. النجاح requires CGPA ≥ 2.0. إعادة المقرر: الحد الأقصى للدرجة 83 (نقاط 3.0).</div>
+    </div>
+
+    <div class="gpa-toolbar">
+      <div class="grow">
+        <div class="gpa-label">المستوى</div>
+        <select class="gpa-select" id="gpaLevel">
+          <option value="1">المستوى الأول</option>
+          <option value="2">المستوى الثاني</option>
+          <option value="3">المستوى الثالث</option>
+          <option value="4">المستوى الرابع</option>
+        </select>
+      </div>
+      <div class="grow">
+        <div class="gpa-label">الفصل</div>
+        <select class="gpa-select" id="gpaSemester">
+          <option value="first">الفصل الدراسي الأول</option>
+          <option value="second">الفصل الدراسي الثاني</option>
+        </select>
+      </div>
+      <div style="align-self: flex-end;">
+        <div class="gpa-label" style="visibility:hidden;"> </div>
+        <button class="btn-secondary" id="addSemesterBtn" title="أضف هذا الترم">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          أضف الترم
+        </button>
+      </div>
+    </div>
+
+    <!-- Semester Cards Container -->
+    <div id="semestersContainer"></div>
+
+    <!-- Empty state -->
+    <div id="gpaEmpty" class="gpa-empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/>
+      </svg>
+      <p>لم تضف أي ترم بعد<br><small>اختَر المستوى والفصل من الأعلى، ثم اضغط "أضف الترم" لتبدأ</small></p>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="gpa-actions">
+      <button class="btn-primary" id="calcGpaBtn" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="12" y2="14"/></svg>
+        احسب GPA الإجمالي
+      </button>
+      <button class="btn-secondary" id="resetGpaBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        تصفير الكل
+      </button>
+    </div>
+
+    <!-- GPA Loading -->
+    <div class="loading" id="gpaLoading">
+      <div class="shimmer">
+        <div class="shimmer-line"></div>
+        <div class="shimmer-line short"></div>
+      </div>
+      <div class="loading-text">جاري حساب المعدل التراكمي<span class="loading-dots"></span></div>
+    </div>
+
+    <!-- GPA Error -->
+    <div class="error-box" id="gpaError" role="alert">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="gpaErrorText"></span>
+    </div>
+
+    <!-- GPA Results -->
+    <section class="gpa-results" id="gpaResults">
+      <div class="glass">
+        <div class="result-hero">
+          <div class="result-cgpa" id="resultCgpa">—</div>
+          <div class="result-grade" id="resultGrade">—</div>
+          <div class="result-status" id="resultStatus"></div>
+        </div>
+
+        <div class="result-stats" id="resultStats"></div>
+
+        <div id="resultHonors"></div>
+
+        <div class="result-breakdown" id="resultBreakdown" style="display:none;">
+          <div class="breakdown-title">تفصيل الفصول الدراسية</div>
+          <div id="breakdownList"></div>
+        </div>
+
+        <button class="btn-primary btn-full" id="copyGpaBtn" style="margin-top:16px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          نسخ النتيجة
+        </button>
+      </div>
+    </section>
+
+  </section><!-- /tab-gpa -->
 
   <footer>
     KFS AI Assistant — <span class="footer-heart">&hearts;</span> محمد عبد الفتاح &amp; عبد الله نبيل
@@ -969,6 +1589,715 @@ function inlineFormat(text) {
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>');
 }
+
+/*
+  ═══════════════════════════════════════════════════════════
+  📊 GPA CALCULATOR — حاسبة المعدل التراكمي
+  الكود من تطوير: محمد عبد الفتاح & عبد الله نبيل
+  كلية الذكاء الاصطناعي — جامعة كفر الشيخ
+  ═══════════════════════════════════════════════════════════
+*/
+
+// ─── Grade Scale من المادة (15) ───
+const GRADE_SCALE = [
+  { min: 96, max: 100, points: 4.0, symbol: 'A+', grade_ar: 'ممتاز' },
+  { min: 92, max: 95,  points: 3.7, symbol: 'A',  grade_ar: 'ممتاز' },
+  { min: 88, max: 91,  points: 3.4, symbol: 'A-', grade_ar: 'ممتاز' },
+  { min: 84, max: 87,  points: 3.2, symbol: 'B+', grade_ar: 'جيد جدا' },
+  { min: 80, max: 83,  points: 3.0, symbol: 'B',  grade_ar: 'جيد جدا' },
+  { min: 76, max: 79,  points: 2.8, symbol: 'B-', grade_ar: 'جيد جدا' },
+  { min: 72, max: 75,  points: 2.6, symbol: 'C+', grade_ar: 'جيد' },
+  { min: 68, max: 71,  points: 2.4, symbol: 'C',  grade_ar: 'جيد' },
+  { min: 64, max: 67,  points: 2.2, symbol: 'C-', grade_ar: 'جيد' },
+  { min: 60, max: 63,  points: 2.0, symbol: 'D+', grade_ar: 'مقبول' },
+  { min: 55, max: 59,  points: 1.5, symbol: 'D',  grade_ar: 'مقبول' },
+  { min: 50, max: 54,  points: 1.0, symbol: 'D-', grade_ar: 'مقبول' },
+  { min: 0,  max: 49,  points: 0.0, symbol: 'F',  grade_ar: 'راسب' },
+];
+
+const CGPA_CLASSIFICATION = [
+  { min: 3.5, max: 4.0, grade_ar: 'ممتاز',    grade_en: 'Excellent' },
+  { min: 3.0, max: 3.5, grade_ar: 'جيد جداً',  grade_en: 'Very Good' },
+  { min: 2.5, max: 3.0, grade_ar: 'جيد',      grade_en: 'Good' },
+  { min: 2.0, max: 2.5, grade_ar: 'مقبول',    grade_en: 'Pass' },
+  { min: 1.0, max: 2.0, grade_ar: 'ضعيف',     grade_en: 'Weak' },
+  { min: 0.0, max: 1.0, grade_ar: 'ضعيف جداً', grade_en: 'Very Weak' },
+];
+
+const RE_SIT_MAX = 83;  // أقصى درجة للإعادة — مادة (20)
+const PASSING_CGPA = 2.0;
+
+const RE_SIT_POINTS_CAP = (() => {
+  // 83% → أعلى نقطة في B = 3.0
+  for (const g of GRADE_SCALE) {
+    if (g.min <= 83 && 83 <= g.max) return g.points;
+  }
+  return 3.0;
+})();
+
+// ─── COURSE CATALOG — بيانات المقررات من المادة (27) ───
+const COURSES = {
+  1: {
+    first: [
+      { code: 'MA111', title: 'رياضيات 0', hours: 0 },
+      { code: 'MA112', title: 'أساسيات الحاسب', hours: 3 },
+      { code: 'MA113', title: 'مقدمة في الجبر الخطي', hours: 3 },
+      { code: 'HU111', title: 'لغة إنجليزية', hours: 2 },
+      { code: 'MA114', title: 'دوائر كهربية', hours: 3 },
+      { code: 'BC111', title: 'البرمجة الهيكلية', hours: 3 },
+      { code: 'MA115', title: 'رياضيات 1', hours: 2 },
+      { code: 'MA116', title: 'احتمالات وإحصاء 1', hours: 2 },
+    ],
+    second: [
+      { code: 'ML121', title: 'مفاهيم في الذكاء الاصطناعي', hours: 2 },
+      { code: 'BC121', title: 'مقدمة في البرمجة بلغة بايثون', hours: 3 },
+      { code: 'MA121', title: 'احتمالات وإحصاء 2', hours: 2 },
+      { code: 'HU121', title: 'التفكير العلمي', hours: 3 },
+      { code: 'HU122', title: 'قضايا مجتمعية', hours: 3 },
+      { code: 'BC122', title: 'تصميم منطقي', hours: 2 },
+      { code: 'MA122', title: 'تحليل عددي', hours: 3 },
+      { code: 'MA123', title: 'الرياضيات المتقطعة', hours: 3 },
+    ],
+  },
+  2: {
+    first: [
+      { code: 'ML211', title: 'مقدمة في تعلم الآلة', hours: 3 },
+      { code: 'RB211', title: 'مقدمة في الرؤية بالحاسب والروبوتات', hours: 2 },
+      { code: 'BC211', title: 'البرمجة الشيئية', hours: 3 },
+      { code: 'BC212', title: 'بنية الحاسب', hours: 3 },
+      { code: 'ES211', title: 'شبكات الحاسب', hours: 2 },
+      { code: 'HU211', title: 'الكتابة العلمية', hours: 3 },
+      { code: 'MA211', title: 'المعلوماتية الحيوية', hours: 2 },
+      { code: 'MA212', title: 'استرجاع المعلومات والبحث في الويب', hours: 2 },
+    ],
+    second: [
+      { code: 'BC221', title: 'قواعد البيانات', hours: 3 },
+      { code: 'BC222', title: 'أساسيات الذكاء الحسابي', hours: 2 },
+      { code: 'BC223', title: 'مقدمة في هياكل البيانات', hours: 2 },
+      { code: 'RB221', title: 'مقدمة في معالجة اللغات الطبيعية', hours: 2 },
+      { code: 'BC224', title: 'أنظمة التشغيل', hours: 2 },
+      { code: 'BC225', title: 'مقدمة في تصميم الأنظمة متعددة العملاء', hours: 2 },
+      { code: 'BC226', title: 'أمان الحاسب', hours: 2 },
+      { code: 'MA221', title: 'أساسيات الرسم بالحاسب', hours: 2 },
+      { code: 'MA222', title: 'أساسيات علوم النانو', hours: 2 },
+    ],
+  },
+  3: {
+    first: [
+      { code: 'RB311', title: 'الرؤية الحسابية', hours: 3 },
+      { code: 'ML311', title: 'أساسيات التعلم العميق', hours: 3 },
+      { code: 'BC311', title: 'الحوسبة المتوازية والموزعة', hours: 3 },
+      { code: 'BC312', title: 'مقدمة في الخوارزميات', hours: 3 },
+      { code: 'ES311', title: 'تطوير البرمجيات للأجهزة المحمولة', hours: 3 },
+      { code: 'MA311', title: 'معالجة الإشارات', hours: 3 },
+      { code: 'MA312', title: 'تحليل البيانات', hours: 3 },
+    ],
+    second: [
+      { code: 'RB321', title: 'أساسيات التعامل المعرفي مع الروبوتات', hours: 3 },
+      { code: 'HU321', title: 'التسويق ومهارات التقديم', hours: 3 },
+      { code: 'BC321', title: 'التنقيب في البيانات وتحليل البيانات الضخمة', hours: 3 },
+      { code: 'ES321', title: 'الحوسبة السحابية', hours: 3 },
+      { code: 'BC322', title: 'نماذج تصميم البرمجيات', hours: 3 },
+      { code: 'BC323', title: 'الواقع المختلط والمعزز', hours: 3 },
+      { code: 'BC324', title: 'التمثيل المعرفي', hours: 3 },
+    ],
+  },
+  4: {
+    first: [
+      { code: 'ES411', title: 'إنترنت الأشياء', hours: 3 },
+      { code: 'ML411', title: 'تصميم الأنظمة للذكاء الاصطناعي', hours: 2 },
+      { code: 'ML412', title: 'أنظمة دعم القرار الذكية', hours: 2 },
+      { code: 'RB411', title: 'الرؤية الاصطناعية والتعرف على الأنماط', hours: 2 },
+      { code: 'HU411', title: 'علم النفس الإدراكي', hours: 2 },
+      { code: 'GP411', title: 'مشروع (أ)', hours: 3 },
+      { code: 'BC411', title: 'نظم المعلومات الجغرافية', hours: 2 },
+      { code: 'BC412', title: 'تكنولوجيا الحوسبة داخل الهاتف', hours: 2 },
+      { code: 'BC413', title: 'المنطق والعملاء', hours: 2 },
+    ],
+    second: [
+      { code: 'GP411', title: 'مشروع (ب)', hours: 3 },
+      { code: 'ES421', title: 'الممارسة المهنية في الذكاء الاصطناعي', hours: 3 },
+      { code: 'BC421', title: 'اختبار البرمجيات', hours: 3 },
+      { code: 'ML421', title: 'الخوارزميات الجينية', hours: 3 },
+      { code: 'ES422', title: 'التعلم العميق للسيارات ذاتية القيادة', hours: 2 },
+      { code: 'ES423', title: 'أساسيات الذكاء الاصطناعي في المدن الذكية', hours: 2 },
+      { code: 'ES424', title: 'النانو تكنولوجي والذكاء الاصطناعي', hours: 2 },
+    ],
+  },
+};
+
+const LEVEL_NAMES = { 1: 'الأول', 2: 'الثاني', 3: 'الثالث', 4: 'الرابع' };
+const SEM_NAMES = { first: 'الأول', second: 'الثاني' };
+
+// ─── State Management ───
+let gpaState = loadGpaState();
+
+function generateSemesterId() {
+  return 'sem_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
+}
+
+function createDefaultSemester(level, semester) {
+  const courses = (COURSES[level] && COURSES[level][semester]) || [];
+  return {
+    id: generateSemesterId(),
+    level: level,
+    semester: semester,
+    courses: courses.map(c => ({
+      code: c.code,
+      percentage: '',
+      isRetake: false,
+    })),
+  };
+}
+
+// ─── localStorage ───
+function saveGpaState() {
+  try {
+    // Only save semesters that have data
+    const filtered = gpaState.filter(s => s.courses.some(c => c.percentage !== ''));
+    localStorage.setItem('kfs_gpa_state', JSON.stringify(filtered));
+  } catch (e) { /* quota exceeded or private mode */ }
+}
+
+function loadGpaState() {
+  try {
+    const raw = localStorage.getItem('kfs_gpa_state');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch (e) { /* corrupted or inaccessible */ }
+  return [];
+}
+
+// ─── Helpers ───
+function gradeToPoints(percentage, isRetake) {
+  const effective = Math.min(percentage, RE_SIT_MAX);
+  for (const g of GRADE_SCALE) {
+    if (effective >= g.min && effective <= g.max) {
+      return { points: g.points, symbol: g.symbol, grade_ar: g.grade_ar, percentage: effective };
+    }
+  }
+  return { points: 0, symbol: 'F', grade_ar: 'راسب', percentage: effective };
+}
+
+function classifyCgpa(cgpa) {
+  for (const c of CGPA_CLASSIFICATION) {
+    if (cgpa >= c.min && cgpa < c.max) return { grade_ar: c.grade_ar, grade_en: c.grade_en };
+  }
+  return { grade_ar: 'ضعيف جداً', grade_en: 'Very Weak' };
+}
+
+function calcSemesterGpa(sem) {
+  const semCourses = (COURSES[sem.level] && COURSES[sem.level][sem.semester]) || [];
+  let totalPoints = 0;
+  let totalHours = 0;
+  const results = [];
+
+  for (let i = 0; i < semCourses.length; i++) {
+    const courseDef = semCourses[i];
+    const studentInput = sem.courses[i] || { percentage: '', isRetake: false };
+    const pct = parseFloat(studentInput.percentage);
+
+    if (isNaN(pct) || courseDef.hours === 0) {
+      results.push({ ...courseDef, points: null, symbol: '-', grade_ar: '-', weightedPoints: 0 });
+      continue;
+    }
+
+    const grade = gradeToPoints(pct, studentInput.isRetake);
+    const weighted = grade.points * courseDef.hours;
+    totalPoints += weighted;
+    totalHours += courseDef.hours;
+
+    results.push({
+      ...courseDef,
+      points: grade.points,
+      symbol: grade.symbol,
+      grade_ar: grade.grade_ar,
+      weightedPoints: weighted,
+      isRetake: studentInput.isRetake,
+    });
+  }
+
+  const gpa = totalHours > 0 ? Math.round((totalPoints / totalHours) * 100) / 100 : 0;
+  return { courses: results, gpa, totalPoints: Math.round(totalPoints * 100) / 100, totalHours };
+}
+
+function calcAllCgpa() {
+  const semResults = [];
+  let cumPoints = 0;
+  let cumHours = 0;
+  let hasFailed = false;
+
+  for (const sem of gpaState) {
+    const r = calcSemesterGpa(sem);
+    semResults.push({ ...r, level: sem.level, semester: sem.semester });
+
+    for (const c of r.courses) {
+      if (c.symbol === 'F') hasFailed = true;
+    }
+
+    cumPoints += r.totalPoints;
+    cumHours += r.totalHours;
+  }
+
+  const cgpa = cumHours > 0 ? Math.round((cumPoints / cumHours) * 100) / 100 : 0;
+  const classification = classifyCgpa(cgpa);
+  const honorsEligible = cgpa >= 3.0 && !hasFailed;
+
+  return {
+    semesters: semResults,
+    cgpa,
+    overallGradeAr: classification.grade_ar,
+    overallGradeEn: classification.grade_en,
+    totalHours: cumHours,
+    totalPoints: Math.round(cumPoints * 100) / 100,
+    honorsEligible,
+    passing: cgpa >= PASSING_CGPA,
+  };
+}
+
+// ─── Render Functions ───
+function renderAllSemesters() {
+  const container = document.getElementById('semestersContainer');
+  const empty = document.getElementById('gpaEmpty');
+  const calcBtn = document.getElementById('calcGpaBtn');
+
+  if (gpaState.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    calcBtn.disabled = true;
+    return;
+  }
+
+  empty.style.display = 'none';
+  calcBtn.disabled = false;
+
+  let html = '';
+  for (let i = 0; i < gpaState.length; i++) {
+    html += renderSemesterCard(gpaState[i], i);
+  }
+  container.innerHTML = html;
+
+  // Bind events for each semester
+  gpaState.forEach((sem, idx) => {
+    const semCourses = (COURSES[sem.level] && COURSES[sem.level][sem.semester]) || [];
+
+    semCourses.forEach((c, ci) => {
+      if (c.hours === 0) return; // Skip remedial
+      const input = document.getElementById(`gpa_input_${idx}_${ci}`);
+      const retake = document.getElementById(`gpa_retake_${idx}_${ci}`);
+      if (input) {
+        input.addEventListener('input', () => onGradeInput(idx, ci));
+        input.addEventListener('blur', () => updateSemesterDisplay(idx));
+      }
+      if (retake) {
+        retake.addEventListener('change', () => onGradeInput(idx, ci));
+      }
+    });
+
+    const delBtn = document.getElementById(`gpa_del_${idx}`);
+    if (delBtn) {
+      delBtn.addEventListener('click', () => removeSemester(idx));
+    }
+  });
+}
+
+function renderSemesterCard(sem, idx) {
+  const semCourses = (COURSES[sem.level] && COURSES[sem.level][sem.semester]) || [];
+  const levelName = LEVEL_NAMES[sem.level] || sem.level;
+  const semName = SEM_NAMES[sem.semester] || sem.semester;
+  const title = `المستوى ${levelName} - الفصل ${semName}`;
+
+  let coursesHtml = '';
+  for (let ci = 0; ci < semCourses.length; ci++) {
+    const c = semCourses[ci];
+    const input = sem.courses[ci] || { percentage: '', isRetake: false };
+
+    if (c.hours === 0) {
+      // Remedial course — show as read-only
+      coursesHtml += `<div class="course-row" style="opacity:0.4;">
+        <span class="course-code">${c.code}</span>
+        <span class="course-name">${c.title} <span style="font-size:0.7rem;color:var(--muted);">(استدراكي)</span></span>
+        <span class="course-hours">0</span>
+        <span class="course-input"><input type="text" disabled value="—"></span>
+        <span class="course-points" style="color:var(--muted);">—</span>
+      </div>`;
+      continue;
+    }
+
+    const pct = input.percentage;
+    const isRetake = input.isRetake;
+    let pointsHtml = '';
+    let pointsClass = '';
+
+    if (pct !== '' && !isNaN(parseFloat(pct))) {
+      const grade = gradeToPoints(parseFloat(pct), isRetake);
+      if (grade.points >= 3.5) pointsClass = 'high';
+      else if (grade.points >= 2.5) pointsClass = 'mid';
+      else if (grade.points >= 1.0) pointsClass = 'low';
+      else pointsClass = 'fail';
+      pointsHtml = `${grade.points}<br><span style="font-size:0.6rem;font-weight:400;">${grade.symbol}</span>`;
+    }
+
+    coursesHtml += `<div class="course-row">
+      <span class="course-code">${c.code}</span>
+      <span class="course-name" title="${c.title}">${c.title}</span>
+      <span class="course-hours">${c.hours}</span>
+      <div class="course-input">
+        <input type="number" min="0" max="100" id="gpa_input_${idx}_${ci}"
+               placeholder="%" value="${pct !== '' ? pct : ''}">
+      </div>
+      <div class="course-points ${pointsClass}">${pointsHtml || '—'}</div>
+      <div class="course-retake">
+        <input type="checkbox" id="gpa_retake_${idx}_${ci}" ${isRetake ? 'checked' : ''}>
+        <div class="course-retake-label">إعادة</div>
+      </div>
+    </div>`;
+  }
+
+  // Quick GPA preview
+  const preview = calcSemesterGpa(sem);
+
+  return `<div class="semester-card">
+    <div class="glass">
+      <div class="semester-header">
+        <div class="semester-title">
+          <div class="sem-icon">${Number(LEVEL_NAMES[sem.level])}</div>
+          ${title}
+        </div>
+        <div class="semester-actions">
+          <span class="semester-summary">${semCourses.filter(c => c.hours > 0).length} مادة</span>
+          <button class="btn-icon" id="gpa_del_${idx}" title="حذف هذا الترم" style="color:var(--error);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      ${coursesHtml}
+      <div class="semester-total" id="gpa_total_${idx}">
+        <div class="semester-total-left">
+          <span class="semester-total-label">GPA الفصل:</span>
+          <span class="semester-total-value">${preview.gpa}</span>
+        </div>
+        <span class="semester-total-points">${preview.totalPoints} نقطة • ${preview.totalHours} ساعة</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function updateSemesterDisplay(idx) {
+  const sem = gpaState[idx];
+  if (!sem) return;
+
+  // Recalculate and update the total footer
+  const result = calcSemesterGpa(sem);
+  const totalEl = document.getElementById(`gpa_total_${idx}`);
+  if (totalEl) {
+    totalEl.innerHTML = `<div class="semester-total-left">
+      <span class="semester-total-label">GPA الفصل:</span>
+      <span class="semester-total-value">${result.gpa}</span>
+    </div>
+    <span class="semester-total-points">${result.totalPoints} نقطة • ${result.totalHours} ساعة</span>`;
+  }
+
+  saveGpaState();
+  document.getElementById('calcGpaBtn').disabled = false;
+}
+
+function onGradeInput(idx, ci) {
+  const sem = gpaState[idx];
+  if (!sem) return;
+
+  const input = document.getElementById(`gpa_input_${idx}_${ci}`);
+  const retake = document.getElementById(`gpa_retake_${idx}_${ci}`);
+
+  if (!sem.courses[ci]) {
+    sem.courses[ci] = { code: (COURSES[sem.level] && COURSES[sem.level][sem.semester] || [])[ci]?.code || '', percentage: '', isRetake: false };
+  }
+
+  sem.courses[ci].percentage = input.value;
+  sem.courses[ci].isRetake = retake ? retake.checked : false;
+
+  // Update points display
+  const pct = parseFloat(input.value);
+  const pointsEl = input.closest('.course-row').querySelector('.course-points');
+
+  if (!isNaN(pct) && input.value !== '') {
+    const grade = gradeToPoints(pct, retake && retake.checked);
+    let cls = '';
+    if (grade.points >= 3.5) cls = 'high';
+    else if (grade.points >= 2.5) cls = 'mid';
+    else if (grade.points >= 1.0) cls = 'low';
+    else cls = 'fail';
+    pointsEl.className = `course-points ${cls}`;
+    pointsEl.innerHTML = `${grade.points}<br><span style="font-size:0.6rem;font-weight:400;">${grade.symbol}</span>`;
+  } else {
+    pointsEl.className = 'course-points';
+    pointsEl.innerHTML = '—';
+  }
+
+  updateSemesterDisplay(idx);
+}
+
+function addSemester() {
+  const level = parseInt(document.getElementById('gpaLevel').value);
+  const semester = document.getElementById('gpaSemester').value;
+
+  // Check for duplicates
+  const exists = gpaState.some(s => s.level === level && s.semester === semester);
+  if (exists) {
+    alert('هذا الترم مضاف بالفعل. لو عاوز تغير الدرجات عدّلها في الترم الموجود.');
+    return;
+  }
+
+  const newSem = createDefaultSemester(level, semester);
+  gpaState.push(newSem);
+  saveGpaState();
+  renderAllSemesters();
+  document.getElementById('gpaResults').classList.remove('visible');
+}
+
+function removeSemester(idx) {
+  gpaState.splice(idx, 1);
+  saveGpaState();
+  renderAllSemesters();
+  document.getElementById('gpaResults').classList.remove('visible');
+}
+
+// ─── Calculate & Show Results ───
+function calculateAndShowResults() {
+  // Save all pending inputs first
+  gpaState.forEach((sem, idx) => {
+    const semCourses = (COURSES[sem.level] && COURSES[sem.level][sem.semester]) || [];
+    semCourses.forEach((c, ci) => {
+      const input = document.getElementById(`gpa_input_${idx}_${ci}`);
+      const retake = document.getElementById(`gpa_retake_${idx}_${ci}`);
+      if (input) sem.courses[ci].percentage = input.value;
+      if (retake) sem.courses[ci].isRetake = retake.checked;
+    });
+  });
+  saveGpaState();
+
+  // Filter out semesters with no grades
+  const hasAnyGrade = gpaState.some(s => s.courses.some(c => c.percentage !== '' && !isNaN(parseFloat(c.percentage))));
+  if (!hasAnyGrade) {
+    alert('أدخل درجات في مادة واحدة على الأقل قبل الحساب.');
+    return;
+  }
+
+  const loading = document.getElementById('gpaLoading');
+  const errorBox = document.getElementById('gpaError');
+  const errorText = document.getElementById('gpaErrorText');
+  const resultsSection = document.getElementById('gpaResults');
+
+  loading.classList.add('visible');
+  errorBox.classList.remove('visible');
+  resultsSection.classList.remove('visible');
+
+  const result = calcAllCgpa();
+
+  // Simulate slight delay for UX
+  setTimeout(() => {
+    loading.classList.remove('visible');
+
+    if (result.totalHours === 0) {
+      errorText.textContent = 'لا توجد بيانات كافية للحساب. أدخل درجات صحيحة.';
+      errorBox.classList.add('visible');
+      return;
+    }
+
+    renderResults(result);
+    resultsSection.classList.add('visible');
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 400);
+}
+
+function renderResults(result) {
+  document.getElementById('resultCgpa').textContent = result.cgpa.toFixed(2);
+  document.getElementById('resultCgpa').className = 'result-cgpa' + (result.honorsEligible ? ' honors' : '');
+  document.getElementById('resultGrade').textContent = result.overallGradeAr;
+
+  // Status badge
+  const statusEl = document.getElementById('resultStatus');
+  if (result.passing) {
+    statusEl.className = 'result-status pass';
+    statusEl.innerHTML = '✅ ناجح — المعدل التراكمي ≥ 2.0';
+  } else {
+    statusEl.className = 'result-status fail';
+    statusEl.innerHTML = '⚠️ تحت الملاحظة الأكاديمية — المعدل التراكمي أقل من 2.0';
+  }
+
+  // Stats grid
+  document.getElementById('resultStats').innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value">${result.totalHours}</div>
+      <div class="stat-label">إجمالي الساعات</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${result.totalPoints.toFixed(1)}</div>
+      <div class="stat-label">مجموع النقاط</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">${result.overallGradeEn}</div>
+      <div class="stat-label">Overall Grade</div>
+    </div>
+  `;
+
+  // Honors badge
+  const honorsEl = document.getElementById('resultHonors');
+  if (result.honorsEligible) {
+    honorsEl.innerHTML = `<div class="honors-badge eligible">
+      <span>🏅</span> مبروك! أنت مؤهل لـ <strong>مرتبة الشرف</strong> (CGPA ≥ 3.0 بدون رسوب)
+    </div>`;
+  } else {
+    const reason = result.cgpa < 3.0
+      ? 'CGPA أقل من 3.0'
+      : 'يوجد مقرر برسوب (F)';
+    honorsEl.innerHTML = `<div class="honors-badge not-eligible">
+      <span>📋</span> غير مؤهل لمرتبة الشرف — ${reason}
+    </div>`;
+  }
+
+  // Breakdown
+  const breakdownEl = document.getElementById('resultBreakdown');
+  const listEl = document.getElementById('breakdownList');
+  if (result.semesters.length > 1) {
+    breakdownEl.style.display = 'block';
+    let listHtml = '';
+    for (const s of result.semesters) {
+      const levelName = LEVEL_NAMES[s.level] || s.level;
+      const semName = SEM_NAMES[s.semester] || s.semester;
+      const cls = classifyCgpa(s.gpa);
+      listHtml += `<div class="breakdown-row">
+        <span class="bd-label">المستوى ${levelName} - الفصل ${semName}</span>
+        <span>
+          <span class="bd-gpa">${s.gpa}</span>
+          <span class="bd-grade">${cls.grade_ar}</span>
+          <span class="bd-h">• ${s.totalHours}س</span>
+        </span>
+      </div>`;
+    }
+    listEl.innerHTML = listHtml;
+  } else {
+    breakdownEl.style.display = 'none';
+  }
+}
+
+// ─── Copy GPA Result ───
+function copyGpaResult() {
+  const cgpa = document.getElementById('resultCgpa').textContent;
+  const grade = document.getElementById('resultGrade').textContent;
+  const status = document.getElementById('resultStatus').textContent.replace('✅ ', '').replace('⚠️ ', '');
+
+  let text = `📊 KFS AI Assistant — نتيجة GPA\n`;
+  text += `═══════════════════════════\n`;
+  text += `CGPA التراكمي: ${cgpa}\n`;
+  text += `التقدير العام: ${grade}\n`;
+  text += `الحالة: ${status}\n`;
+
+  const statsEls = document.querySelectorAll('.stat-card');
+  statsEls.forEach(el => {
+    const val = el.querySelector('.stat-value').textContent;
+    const label = el.querySelector('.stat-label').textContent;
+    text += `${label}: ${val}\n`;
+  });
+
+  const honorsEl = document.getElementById('resultHonors');
+  if (honorsEl && honorsEl.textContent.includes('مرتبة الشرف')) {
+    const isEligible = honorsEl.querySelector('.eligible');
+    text += isEligible ? '🏅 مؤهل لمرتبة الشرف\n' : '📋 غير مؤهل لمرتبة الشرف\n';
+  }
+
+  const breakdownRows = document.querySelectorAll('.breakdown-row');
+  if (breakdownRows.length > 0) {
+    text += `\nتفصيل الفصول:\n`;
+    breakdownRows.forEach(row => {
+      const label = row.querySelector('.bd-label').textContent;
+      const gpa = row.querySelector('.bd-gpa').textContent;
+      text += `  ${label}: ${gpa}\n`;
+    });
+  }
+
+  text += `\n— KFS AI Assistant | كلية الذكاء الاصطناعي — جامعة كفر الشيخ`;
+
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyGpaBtn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> تم النسخ ✅';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  }).catch(() => {});
+}
+
+// ─── Reset ───
+function resetGpa() {
+  if (gpaState.length === 0) return;
+  if (!confirm('هل أنت متأكد؟ سيتم مسح جميع الدراجات المدخلة.')) return;
+
+  gpaState = [];
+  localStorage.removeItem('kfs_gpa_state');
+  renderAllSemesters();
+
+  document.getElementById('gpaResults').classList.remove('visible');
+  document.getElementById('gpaError').classList.remove('visible');
+  document.getElementById('calcGpaBtn').disabled = true;
+}
+
+// ─── Tabs ───
+function setupTabs() {
+  const tabs = document.querySelectorAll('.tab');
+  const contents = {
+    assistant: document.getElementById('tab-assistant'),
+    gpa: document.getElementById('tab-gpa'),
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+
+      tabs.forEach(t => {
+        t.classList.remove('active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+
+      Object.values(contents).forEach(c => c.classList.remove('active'));
+      const content = contents[target];
+      if (content) content.classList.add('active');
+    });
+  });
+}
+
+// ─── Init ───
+document.addEventListener('DOMContentLoaded', () => {
+  setupTabs();
+
+  // Add semester
+  document.getElementById('addSemesterBtn').addEventListener('click', addSemester);
+
+  // Calculate
+  document.getElementById('calcGpaBtn').addEventListener('click', calculateAndShowResults);
+
+  // Reset
+  document.getElementById('resetGpaBtn').addEventListener('click', resetGpa);
+
+  // Copy result
+  document.getElementById('copyGpaBtn').addEventListener('click', copyGpaResult);
+
+  // Enter key on level/semester selects
+  document.querySelectorAll('.gpa-select').forEach(el => {
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') addSemester();
+    });
+  });
+
+  // Load saved state
+  if (gpaState.length > 0) {
+    renderAllSemesters();
+  }
+});
 </script>
 </body>
 </html>
