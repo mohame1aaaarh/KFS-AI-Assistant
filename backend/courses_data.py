@@ -79,7 +79,7 @@ COURSES = {
         ],
         "second": [
             {"code": "BC221", "title_ar": "قواعد البيانات",                                         "title_en": "Databases",                                            "hours": 3,  "type": "P", "status": "core"},
-            {"code": "BC222", "title_ar": "أساسيات الذكاء الحسابي",                                 "title_en": "Fundamentals of Computational Intelligence",           "hours": 2,  "type": "P", "status": "core"},
+            {"code": "BC222", "title_ar": "أساسيات الذكاء الحسابي",                                 "title_en": "Fundamentals of Computational Intelligence",           "hours": 3,  "type": "P", "status": "core"},
             {"code": "BC223", "title_ar": "مقدمة في هياكل البيانات",                                "title_en": "Introduction to Data Structures",                      "hours": 2,  "type": "T", "status": "core"},
             {"code": "RB221", "title_ar": "مقدمة في معالجة اللغات الطبيعية",                       "title_en": "Introduction to Natural Language Processing",          "hours": 2,  "type": "T", "status": "core"},
             {"code": "BC224", "title_ar": "أنظمة التشغيل",                                          "title_en": "Operating Systems",                                    "hours": 2,  "type": "T", "status": "core"},
