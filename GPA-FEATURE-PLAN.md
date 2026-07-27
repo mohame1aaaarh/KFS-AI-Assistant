@@ -356,7 +356,7 @@ const saved = JSON.parse(localStorage.getItem("gpa_state"));
 | المرحلة | الحالة |
 |---|---|
 | **المرحلة 1** — بيانات المقررات (`courses_data.py`) | ✅ مكتمل |
-| **المرحلة 2** — API endpoint | ⏳ |
+| **المرحلة 2** — API endpoint (`gpa_engine.py` + `app.py`) | ✅ مكتمل |
 | **المرحلة 3** — واجهة المستخدم | ⏳ |
 | **المرحلة 4** — localStorage | ⏳ |
 | **المرحلة 5** — اختبار | ⏳ |
@@ -368,8 +368,8 @@ const saved = JSON.parse(localStorage.getItem("gpa_state"));
 | الملف | الحالة | الوصف |
 |---|---|---|
 | `backend/courses_data.py` | ✅ | بيانات 60+ مقرر، جدول الدرجات، دوال حساب GPA/CGPA |
-| `backend/gpa_engine.py` | ⏳ | كلاس حساب GPA و CGPA (اختياري — ممكن نحسب من JS) |
-| `backend/app.py` | ⏳ | إضافة endpoint `/calculate-gpa` |
+| `backend/gpa_engine.py` | ✅ | كلاس حساب GPA و CGPA (calculate_semester + calculate_cgpa + get_course_details) |
+| `backend/app.py` | ✅ | إضافة endpoint `/calculate-gpa` مع Pydantic models |
 | `frontend/index.html` | ⏳ | إضافة تبويب الحاسبة مع كل الـ UI/JS |
 | `GPA-FEATURE-PLAN.md` | ✅ | توثيق الخطة |
 | `README.md` | ✅ | محدث بوصف الميزة |
@@ -380,7 +380,7 @@ const saved = JSON.parse(localStorage.getItem("gpa_state"));
 
 ```
 🟢 المرحلة 1 — بيانات المقررات ✅ (تم)
-🔴 المرحلة 2 — API (بدونه مفيش حاسبة)
+🟢 المرحلة 2 — API ✅ (تم — بواسطة Abdallah)
 🔴 المرحلة 3 — واجهة المستخدم (الشكل اللي الطالب يشوفه)
 🟡 المرحلة 4 — localStorage (تحسين تجربة)
 🟢 المرحلة 5 — اختبار (تأكيد الجودة)
