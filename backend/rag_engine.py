@@ -22,9 +22,6 @@ Example Usage:
     >>> engine = RAGEngine()
     >>> result = engine.ask("ما هي شروط التخرج من الكلية؟")
     >>> print(result["answer"])
-
-Authors: Eng. Abdallah Nabil & Eng. Mohamed Abd El-Fattah
-Version: 1.0.0
 """
 
 import sys
@@ -57,16 +54,16 @@ class RAGEngine:
     
     def __init__(self, collection_name=config.COLLECTION_NAME):
         """Initializes database connections and the Gemini API client."""
-        # التحقق من وجود مفتاح الـ API
+        # Check if API key is provided
         if not config.GOOGLE_API_KEY:
             raise ValueError("GOOGLE_API_KEY is missing from configuration.")
 
         try:
-            # 1. الاتصال بقاعدة بيانات ChromaDB المحلية
+            # 1. Connect to local ChromaDB instance
             self.chroma_client = chromadb.PersistentClient(path=config.CHROMA_PATH)
             self.collection = self.chroma_client.get_or_create_collection(name=collection_name)
 
-            # 2. تهيئة عميل جوجل جمناي الرسمي
+            # 2. Initialize official Google GenAI client
             self.ai_client = genai.Client(api_key=config.GOOGLE_API_KEY)
             print("Status: RAGEngine initialized successfully.")
         except Exception as e:
@@ -74,7 +71,7 @@ class RAGEngine:
 
     def is_arabic(self, text):
         """A simple heuristic check to detect if the query is in Arabic."""
-        # مصفوفة بسيطة وسريعة للتحقق من الحروف العربية بدون مكاتب خارجية بطيئة
+        # Quick Unicode check for Arabic characters without external overhead
         for char in text:
             if '\u0600' <= char <= '\u06FF':
                 return True
@@ -83,7 +80,7 @@ class RAGEngine:
     def retrieve(self, query, k=5):
         """Generates embedding for the query and searches ChromaDB for top-k matches."""
         try:
-            # 1. تحويل سؤال الطالب إلى Embedding بنفس الموديل المستخدم في التخزين
+            # 1. Convert user query to embedding using the same model as storage
             response = self.ai_client.models.embed_content(
                 model=config.EMBEDDING_MODEL,
                 contents=query,
@@ -93,13 +90,13 @@ class RAGEngine:
             )            
             query_embedding = response.embeddings[0].values
 
-            # 2. البحث في ChromaDB باستخدام الـ Embedding المتولد
+            # 2. Query ChromaDB using generated query embedding
             results = self.collection.query(
                 query_embeddings=[query_embedding],
                 n_results=k
             )
 
-            # 3. إعادة صياغة مخرجات كروما لشكل مبسط ومريح للتعامل
+            # 3. Format ChromaDB output into a clean dictionary list
             chunks = []
             if results and results["documents"] and results["documents"][0]:
                 for i in range(len(results["documents"][0])):
@@ -122,10 +119,10 @@ class RAGEngine:
             return "No sufficient information available in the system." if not self.is_arabic(
                 query) else "لا توجد معلومات كافية."
 
-        # 1. دمج النصوص المسترجعة (Context) في نص واحد مجمع
+        # 1. Merge retrieved context chunks into a single formatted string
         context_text = "\n\n".join([f"--- Context Segment ---\n{c['text']}" for c in chunks])
         
-        # Checking wether to use Arabic or English system prompt based on the query language
+        # Select system prompt based on query language
         system_prompt = prompts.SYSTEM_PROMPT_AR if self.is_arabic(query) else prompts.SYSTEM_PROMPT_EN
         
         if self.is_arabic(query):
@@ -134,7 +131,7 @@ class RAGEngine:
         else:
             user_prompt = f"Provided Regulation Context:\n{context_text}\n\nStudent Query: {query}"
 
-        # 3. إرسال الطلب لـ Gemini LLM مع ضبط الـ Temperature على 0.3 لإجابات واقعية وصارمة
+        # 3. Request generation from Gemini LLM with strict low temperature (0.3)
         try:
             config_params = types.GenerateContentConfig(
                 system_instruction=system_prompt,
@@ -159,14 +156,14 @@ class RAGEngine:
         chunks = self.retrieve(query)
         answer = self.generate_answer(query, chunks)
 
-        # استخراج المصادر بشكل آمن يتفادى حدوث أي KeyError في الـ Metadata
+        # Safely extract sources to avoid KeyError on metadata
         sources = []
         for c in chunks:
             meta = c.get("metadata", {})
             sources.append({
                 "article_title": meta.get("article_title", "N/A"),
                 "section": meta.get("section", "N/A"),
-                "text": c["text"][:200]  # اقتطاع أول 200 حرف للمعاينة فقط
+                "text": c["text"][:200]  # Truncate to first 200 chars for preview
             })
 
         return {
@@ -175,12 +172,12 @@ class RAGEngine:
         }
 
 
-# حتة كود صغيرة تحت عشان تقدروا تختبروا الـ Class ده فوراً في الـ Terminal وتشوفوا النتيجة بعينكم
+# Direct CLI execution for quick local testing
 if __name__ == "__main__":
     print("Status: Testing RAGEngine operation...")
     engine = RAGEngine()
 
-    # تجربة سؤال حي باللغة العربية
+    # Live query test in Arabic
     sample_query = "ما هي شروط الحرمان من دخول الامتحان بسبب الغياب؟"
     print(f"\nTesting Query: '{sample_query}'")
 

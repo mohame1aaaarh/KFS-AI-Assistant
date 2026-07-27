@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from rag_engine import RAGEngine
 from gpa_engine import GPAEngine
 
-app = FastAPI(title="KFS AI Assistant", description="مساعد ذكي لطلاب كلية الذكاء الاصطناعي - جامعة كفر الشيخ")
+app = FastAPI(title="KFS AI Assistant", description="AI Assistant for FCAI - Kafrelsheikh University students")
 
 app.add_middleware(
     CORSMiddleware,
@@ -16,7 +16,7 @@ app.add_middleware(
 
 engine = RAGEngine()
 
-# --- Pydantic Schemas البسيطة ---
+# --- Pydantic Schemas ---
 
 class Question(BaseModel):
     question: str
@@ -39,7 +39,7 @@ class GPARequest(BaseModel):
     semesters: list
 
 
-# --- Endpoints القديمة ---
+# --- Legacy Endpoints ---
 
 @app.get("/health", response_model=HealthResponse)
 def health():
@@ -51,11 +51,11 @@ def ask(q: Question):
     return engine.ask(q.question)
 
 
-# --- Endpoint حساب الـ GPA الجديد ---
+# --- GPA Calculation Endpoint ---
 
 @app.post("/calculate-gpa")
 def calculate_gpa(payload: GPARequest):
-    # تحويل البيانات إلى Python dict بأمان
+    # Safely convert input payload to dict
     try:
         raw_semesters = payload.model_dump()["semesters"]
     except AttributeError:
@@ -64,6 +64,6 @@ def calculate_gpa(payload: GPARequest):
     return GPAEngine.calculate_cgpa(raw_semesters)
 
 
-# --- Static Files Mount ---
+# --- Serve Static Frontend Files ---
 
 app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
