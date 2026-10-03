@@ -13,76 +13,76 @@ def ok(msg):    print(f"{clr(32)}[OK]{clr(0)} {msg}")
 def err(msg):   print(f"{clr(31)}[ERROR]{clr(0)} {msg}"); sys.exit(1)
 
 def pip_install(requirements):
-    info("تثبيت الحزم المطلوبة...")
+    info("Installing required packages...")
     result = subprocess.run(
         [sys.executable, "-m", "pip", "install", "-q", "-r", requirements],
         capture_output=True, text=True
     )
     if result.returncode != 0:
-        err(f"فشل تثبيت الحزم:\n{result.stderr}")
-    ok("الحزم مثبتة")
+        err(f"Failed to install packages:\n{result.stderr}")
+    ok("Packages installed successfully")
 
 def ensure_config():
     config_py = os.path.join(ROOT, "backend", "config.py")
     example_py = os.path.join(ROOT, "backend", "config.example.py")
     if os.path.exists(config_py):
-        ok("config.py موجود")
+        ok("config.py already exists")
         return
     if not os.path.exists(example_py):
-        err("ملف config.example.py غير موجود")
+        err("config.example.py file not found")
     shutil.copy2(example_py, config_py)
-    info(f"تم إنشاء {config_py} من القالب")
-    print(f"\n  {clr(36)}→ افتح الملف: backend/config.py{clr(0)}")
-    print(f"  {clr(36)}→ ضع مفتاح Gemini API مكان:{clr(0)} AIzaSyYourActualKeyGoesHere")
-    print(f"  {clr(36)}→ احصل على مفتاح من:{clr(0)} https://ai.google.dev\n")
-    input("  بعد ما تحفظ المفتاح، اضغط Enter للمتابعة... ")
+    info(f"Created {config_py} from template")
+    print(f"\n  {clr(36)}→ Open the file: backend/config.py{clr(0)}")
+    print(f"  {clr(36)}→ Replace placeholder with your Gemini API key:{clr(0)} AIzaSyYourActualKeyGoesHere")
+    print(f"  {clr(36)}→ Get an API key from:{clr(0)} https://ai.google.dev\n")
+    input("  After saving your API key, press Enter to continue... ")
 
 def ensure_chromadb():
     chroma_db = os.path.join(ROOT, "chroma_db")
     if os.path.isdir(chroma_db) and os.listdir(chroma_db):
-        ok("قاعدة البيانات المتجهة موجودة")
+        ok("Vector database already exists")
         return
-    info("chroma_db غير موجودة. جارٍ تشغيل ingest.py...")
+    info("chroma_db not found. Running ingest.py...")
     ingest_path = os.path.join(ROOT, "backend", "ingest.py")
     if not os.path.exists(ingest_path):
-        err("ملف ingest.py غير موجود")
+        err("ingest.py file not found")
     result = subprocess.run([sys.executable, ingest_path], cwd=os.path.join(ROOT, "backend"))
     if result.returncode != 0:
-        err("فشل تشغيل ingest.py")
-    ok("تم بناء قاعدة البيانات")
+        err("Failed to run ingest.py")
+    ok("Database built successfully")
 
 def start_server():
     print(f"\n{'='*50}")
-    print(f"  {clr(36)}KFS AI Assistant — بدء تشغيل السيرفر...{clr(0)}")
+    print(f"  {clr(36)}KFS AI Assistant — Starting server...{clr(0)}")
     print(f"{'='*50}\n")
-    print(f"  الموقع يعمل الآن على: {clr(36)}http://localhost:8000{clr(0)}\n")
+    print(f"  Server is running at: {clr(36)}http://localhost:8000{clr(0)}\n")
     
     backend_dir = os.path.join(ROOT, "backend")
     
-    # تشغيل uvicorn مباشرة وبقاء السكربت معلقاً يستمع للطلبات
+    # Run uvicorn directly and keep the script listening for requests
     try:
         subprocess.run(
             [sys.executable, "-m", "uvicorn", "app:app", "--reload"],
             cwd=backend_dir
         )
     except KeyboardInterrupt:
-        print(f"\n{clr(31)}تم إيقاف السيرفر.{clr(0)}")
+        print(f"\n{clr(31)}Server stopped.{clr(0)}")
 
 def main():
-    print(f"\n{clr(36)}بدء تجهيز KFS AI Assistant...{clr(0)}\n")
+    print(f"\n{clr(36)}Preparing KFS AI Assistant...{clr(0)}\n")
 
     if sys.version_info < (3, 10):
-        err("مطلوب Python 3.10 أو أحدث")
+        err("Python 3.10 or newer is required")
 
     req_path = os.path.join(ROOT, "backend", "requirements.txt")
     if not os.path.exists(req_path):
-        err("ملف requirements.txt غير موجود")
+        err("requirements.txt file not found")
     pip_install(req_path)
 
     ensure_config()
     ensure_chromadb()
     
-    # بدلاً من مجرد طباعة التعليمات، يتم تشغيل السيرفر فوراً
+    # Start the server immediately instead of just printing instructions
     start_server()
 
 if __name__ == "__main__":
